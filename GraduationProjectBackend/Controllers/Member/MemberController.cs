@@ -14,7 +14,7 @@ namespace GraduationProjectBackend.Controllers.Member
     public class MemberController : ControllerBase
     {
         private readonly MssqlDbContext _context;
-        private IMemberService _memberService;
+        private readonly IMemberService _memberService;
         private UserRepository _userRepository;
         private JwtHelper _jwtHelper;
 
@@ -110,7 +110,18 @@ namespace GraduationProjectBackend.Controllers.Member
                 return StatusCode(500, "Internal server error occurred.");
             }
         }
-
+        /// <summary>
+        /// 登入
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="password"></param>
+        /// <remarks>
+        /// 測試用帳號:
+        /// user1
+        /// 測試用密碼:
+        /// user1
+        /// </remarks>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<ActionResult<String>> Login(string account, string password)
         {
