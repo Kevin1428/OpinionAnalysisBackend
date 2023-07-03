@@ -5,6 +5,7 @@ using GraduationProjectBackend.Filter.Swagger;
 using GraduationProjectBackend.Helper.Member;
 using GraduationProjectBackend.Services.Favorite;
 using GraduationProjectBackend.Services.Member;
+using GraduationProjectBackend.Services.WordCloud;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -54,6 +55,9 @@ builder.Services.AddScoped<FavoriteFolderItemRepository>();
 builder.Services.AddScoped<FavoriteItemRepository>();
 builder.Services.AddSingleton<EncryptHelper>();
 builder.Services.AddSingleton<JwtHelper>();
+
+builder.Services.AddScoped<IWordCloudService, FakeWordCloudService>();
+
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
