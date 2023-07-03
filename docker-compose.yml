@@ -1,0 +1,26 @@
+version: '3.4'
+
+volumes:
+    MSSQL:
+        external: true
+        
+
+services:
+  graduationprojectbackend:
+    image: ${DOCKER_REGISTRY-}graduationprojectbackend
+    build:
+      context: .
+      dockerfile: GraduationProjectBackend/Dockerfile
+
+  mssql:
+   image: mcr.microsoft.com/mssql/server:2022-latest
+   environment:
+     - SA_PASSWORD=Pass@word
+     - ACCEPT_EULA=Y
+     - MSSQL_TCP_PORT=1433
+     - MSSQL_ENABLE_TCP=YES
+   ports:
+     - "1433:1433"  
+   #volumes:
+   #  - MSSQL:/var/opt/mssql
+      
