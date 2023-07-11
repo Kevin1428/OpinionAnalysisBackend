@@ -5,6 +5,7 @@ using GraduationProjectBackend.Filter.Swagger;
 using GraduationProjectBackend.Helper.Member;
 using GraduationProjectBackend.Services.Favorite;
 using GraduationProjectBackend.Services.Member;
+using GraduationProjectBackend.Services.PopularityAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     options.OperationFilter<AuthorizeCheckOperationFilter>();
+    options.UseDateOnlyTimeOnlyStringConverters();
 });
 
 builder.Services.AddDbContext<MssqlDbContext>(options =>
@@ -57,6 +59,7 @@ builder.Services.AddSingleton<EncryptHelper>();
 builder.Services.AddSingleton<JwtHelper>();
 
 builder.Services.AddScoped<IWordCloudService, FakeWordCloudService>();
+builder.Services.AddScoped<IPopularityAnalysisService, FakePopularityAnalysisService>();
 
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
