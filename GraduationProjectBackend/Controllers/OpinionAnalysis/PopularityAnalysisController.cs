@@ -1,6 +1,7 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
 using GraduationProjectBackend.Services.PopularityAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -26,6 +27,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// <returns></returns>
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> PopularityAnalysis(PopularityAnalysisRequest re)
         {
             return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(re.Topic, re.StartDate, re.EndDate));

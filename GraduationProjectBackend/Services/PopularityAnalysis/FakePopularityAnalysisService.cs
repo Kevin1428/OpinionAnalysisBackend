@@ -7,15 +7,17 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
         public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
-            ICollection<int> DiscussNumber = new List<int>();
+            ICollection<int> discussNumber = new List<int>();
+            var randomDiscussNumber = new Random();
 
             for (; endDate > startDate; endDate = endDate.AddDays(-7))
             {
                 dateOfAnalysis.Add(endDate);
+                discussNumber.Add(randomDiscussNumber.Next(1, 10000));
             }
 
             var PopularityAnalysisResponse = new PopularityAnalysisResponse(
-                    DiscussNumber: DiscussNumber,
+                    DiscussNumber: discussNumber,
                     Dates: dateOfAnalysis
                 );
             return Task.FromResult<PopularityAnalysisResponse>(PopularityAnalysisResponse);
