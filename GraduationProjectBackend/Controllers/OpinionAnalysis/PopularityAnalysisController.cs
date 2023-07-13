@@ -19,18 +19,14 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// <summary>
         /// 熱度分析
         /// </summary>
-        /// <param name="Topic"> 搜尋主題 </param>
         /// <remarks>
-        /// 給搜尋主題,搜索開始時間,搜索結束時間 \n
-        /// 回傳
         /// </remarks>
-        /// <returns></returns>
 
-        [HttpPost]
+        [HttpGet("/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         [Authorize]
-        public async Task<ActionResult> PopularityAnalysis(PopularityAnalysisRequest re)
+        public async Task<ActionResult> PopularityAnalysis([FromRoute] PopularityAnalysisRequest popularityAnalysisRequest)
         {
-            return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(re.Topic, re.StartDate, re.EndDate));
+            return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(popularityAnalysisRequest.Topic, popularityAnalysisRequest.StartDate, popularityAnalysisRequest.EndDate));
         }
     }
 }
