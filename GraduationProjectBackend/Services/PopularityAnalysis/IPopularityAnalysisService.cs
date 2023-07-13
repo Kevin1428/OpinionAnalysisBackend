@@ -1,5 +1,6 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
 using GraduationProjectBackend.DataAccess.DTOs.WordCloudDTOs;
+using GraduationProjectBackend.DataAccess.Models.PopularityAnalysis;
 using System;
 using System.Threading.Tasks;
 

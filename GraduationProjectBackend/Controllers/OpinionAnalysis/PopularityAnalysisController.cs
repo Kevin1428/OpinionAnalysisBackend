@@ -1,4 +1,4 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
 using GraduationProjectBackend.Services.PopularityAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
 using Microsoft.AspNetCore.Authorization;
@@ -22,9 +22,9 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// <remarks>
         /// </remarks>
 
-        [HttpGet("/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
+        [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         [Authorize]
-        public async Task<ActionResult> PopularityAnalysis([FromRoute] PopularityAnalysisRequest popularityAnalysisRequest)
+        public async Task<ActionResult> PopularityAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest)
         {
             return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(popularityAnalysisRequest.Topic, popularityAnalysisRequest.StartDate, popularityAnalysisRequest.EndDate));
         }

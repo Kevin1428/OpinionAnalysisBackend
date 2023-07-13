@@ -1,8 +1,9 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
+using GraduationProjectBackend.Services.PopularityAnalysis;
 
-namespace GraduationProjectBackend.Services.PopularityAnalysis
+namespace GraduationProjectBackend.Services.SentimentAnalysis
 {
-    public class FakePopularityAnalysisService : IPopularityAnalysisService
+    public class PopularityAnalysisService : IPopularityAnalysisService
     {
         public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
         {
@@ -20,7 +21,7 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
                     DiscussNumber: discussNumber,
                     Dates: dateOfAnalysis
                 );
-            return Task.FromResult<PopularityAnalysisResponse>(PopularityAnalysisResponse);
+            return Task.FromResult(PopularityAnalysisResponse);
         }
     }
 }
