@@ -1,11 +1,10 @@
 ﻿using GraduationProjectBackend.DataAccess.Context;
+using GraduationProjectBackend.DataAccess.DTOs.Member;
 using GraduationProjectBackend.DataAccess.Models.Member;
 using GraduationProjectBackend.DataAccess.Repositories.Member;
 using GraduationProjectBackend.Helper.Member;
 using GraduationProjectBackend.Services.Member;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GraduationProjectBackend.Controllers.Member
 {
@@ -26,20 +25,19 @@ namespace GraduationProjectBackend.Controllers.Member
             _userRepository = userRepository;
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Getusers()
-        {
+        //// GET: api/Users
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<User>>> Getusers()
+        //{
 
-            if (_context.users == null)
-            {
-                return NotFound();
-            }
-            return await _context.users.ToListAsync();
-        }
+        //    if (_context.users == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return await _context.users.ToListAsync();
+        //}
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<ActionResult<User>> GetUser(int id)
         {
 
@@ -59,47 +57,47 @@ namespace GraduationProjectBackend.Controllers.Member
             return user;
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
-            if (id != user.userId)
-            {
-                return BadRequest();
-            }
+        //// PUT: api/Users/5
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPatch("{id}")]
+        //public async Task<IActionResult> PutUser(int id, User user)
+        //{
+        //    if (id != user.userId)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(user).State = EntityState.Modified;
+        //    _context.Entry(user).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!await UserExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(string account, string password)
+        public async Task<ActionResult<User>> Register(UserDTO userDTO)
         {
             if (_context.users == null)
             {
                 return Problem("Entity set 'MssqlDbContext.users'  is null.");
             }
-            User? user = await _memberService.Register(account, password);
+            User? user = await _memberService.Register(userDTO.account, userDTO.password);
 
             if (user != null)
             {
@@ -123,9 +121,9 @@ namespace GraduationProjectBackend.Controllers.Member
         /// </remarks>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<ActionResult<String>> Login(string account, string password)
+        public async Task<ActionResult<String>> Login(UserDTO userDTO)
         {
-            User? user = await _userRepository.GetByCondition(u => u.account == account);
+            User? user = await _userRepository.GetByCondition(u => u.account == userDTO.account);
             String token;
 
             if (user == null)
@@ -133,7 +131,7 @@ namespace GraduationProjectBackend.Controllers.Member
                 return NotFound();
             }
 
-            if (_memberService.AuthenticatePassword(user, password))
+            if (_memberService.AuthenticatePassword(user, userDTO.password))
             {
                 token = await _memberService.GenerateToken(user);
 
@@ -143,25 +141,25 @@ namespace GraduationProjectBackend.Controllers.Member
             return Unauthorized();
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            if (_context.users == null)
-            {
-                return NotFound();
-            }
-            var user = await _context.users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+        //// DELETE: api/Users/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteUser(int id)
+        //{
+        //    if (_context.users == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var user = await _context.users.FindAsync(id);
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.users.Remove(user);
-            await _context.SaveChangesAsync();
+        //    _context.users.Remove(user);
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         private async Task<bool> UserExists(int id)
         {
