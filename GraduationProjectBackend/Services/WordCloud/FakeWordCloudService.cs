@@ -4,9 +4,9 @@ namespace GraduationProjectBackend.Services.WordCloud
 {
     public class FakeWordCloudService : IWordCloudService
     {
-        public async Task<WordCloudResponseDTO> GetWordCloudResponseDTO(string topic)
+        public async Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
         {
-            WordCloudResponseDTO response = new()
+            WordCloudResponse response = new()
             {
                 WordSegment = new List<string>(){
                     "你好", "世界", "大家", "中文", "學習",

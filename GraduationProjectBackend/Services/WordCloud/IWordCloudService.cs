@@ -4,6 +4,6 @@ namespace GraduationProjectBackend.Services.WordCloud
 {
     public interface IWordCloudService
     {
-        public Task<WordCloudResponseDTO> GetWordCloudResponseDTO(string topic);
+        public Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate);
     }
 }

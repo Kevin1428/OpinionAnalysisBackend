@@ -23,15 +23,18 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// 搜尋主題內容斷詞後的詞和頻率
         /// </remarks>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         [Authorize]
         //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
 
-        public async Task<ActionResult> TopicContentSegment([FromQuery] string Topic)
+        public async Task<ActionResult> TopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest)
         {
             try
             {
-                WordCloudResponseDTO wordCloudResponseDTO = await _wordCloudService.GetWordCloudResponseDTO(Topic);
+                var wordCloudResponseDTO = await _wordCloudService.GetWordCloudResponseDTO(
+                    wordCloudRequest.Topic,
+                    wordCloudRequest.StartDate,
+                    wordCloudRequest.EndDate);
                 return Ok(wordCloudResponseDTO);
             }
             catch (Exception ex)
