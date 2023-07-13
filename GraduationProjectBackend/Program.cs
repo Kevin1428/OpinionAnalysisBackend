@@ -6,6 +6,7 @@ using GraduationProjectBackend.Helper.Member;
 using GraduationProjectBackend.Services.Favorite;
 using GraduationProjectBackend.Services.Member;
 using GraduationProjectBackend.Services.PopularityAnalysis;
+using GraduationProjectBackend.Services.SentimentAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +60,8 @@ builder.Services.AddSingleton<EncryptHelper>();
 builder.Services.AddSingleton<JwtHelper>();
 
 builder.Services.AddScoped<IWordCloudService, FakeWordCloudService>();
-builder.Services.AddScoped<IPopularityAnalysisService, FakePopularityAnalysisService>();
+builder.Services.AddScoped<ISentimentAnalysisService, FakeSentimentAnalysisService>();
+builder.Services.AddScoped<IPopularityAnalysisService, PopularityAnalysisService>();
 
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
