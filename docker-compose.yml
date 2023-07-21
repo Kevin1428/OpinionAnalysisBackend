@@ -3,6 +3,8 @@ version: '3.4'
 volumes:
     MSSQL:
         external: true
+    es_data:
+        driver: local
         
 
 services:
@@ -11,16 +13,76 @@ services:
     build:
       context: .
       dockerfile: GraduationProjectBackend/Dockerfile
+    volumes:
+    -  ./GraduationProjectBackend/Utility/ArticleReader/AtricleDates:/app/Utility/ArticleReader/AtricleDates
 
   mssql:
-   image: mcr.microsoft.com/mssql/server:2022-latest
-   environment:
-     - SA_PASSWORD=Pass@word
-     - ACCEPT_EULA=Y
-     - MSSQL_TCP_PORT=1433
-     - MSSQL_ENABLE_TCP=YES
-   ports:
-     - "1433:1433"  
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+      - MSSQL_TCP_PORT=1433
+      - MSSQL_ENABLE_TCP=YES
+    ports:
+      - "1433:1433"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.3
+    container_name: elasticsearch-623
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - http.host=0.0.0.0
+      - http.port=9200
+      - transport.host=127.0.0.1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx4g"
+      - "http.cors.allow-origin=http://127.0.0.1:1358"
+      - "http.cors.enabled=true"
+      - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
+      - "http.cors.allow-credentials=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:6.2.3
+    container_name: kibana-623
+    environment:
+      SERVER_NAME: kibana-server
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+
+  cerebro:
+    image: yannart/cerebro:latest
+    container_name: cerebro-073
+    ports:
+      - "9900:9000"
+    depends_on:
+      - elasticsearch
+
+  elasticsearch-hq:
+    image: elastichq/elasticsearch-hq:latest
+    container_name: elasticsearch-hq-330
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5000:5000"
+
+  dejavu:
+    image: appbaseio/dejavu:latest
+    container_name: dejavu
+    ports:
+      - "1358:1358"
+
    #volumes:
    #  - MSSQL:/var/opt/mssql
       

@@ -59,10 +59,11 @@ builder.Services.AddScoped<FavoriteItemRepository>();
 builder.Services.AddSingleton<EncryptHelper>();
 builder.Services.AddSingleton<JwtHelper>();
 
-builder.Services.AddScoped<IWordCloudService, FakeWordCloudService>();
+builder.Services.AddScoped<IWordCloudService, WordCloudService>();
 builder.Services.AddScoped<ISentimentAnalysisService, FakeSentimentAnalysisService>();
 builder.Services.AddScoped<IPopularityAnalysisService, PopularityAnalysisService>();
 
+builder.Services.AddScoped<FakeWordCloudService>();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -110,4 +111,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MigrateDatabase();
+
 app.Run();

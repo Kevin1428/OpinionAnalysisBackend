@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <Folder Include="DataAccess\Migrations\" />
+    <Folder Include="Helper\OpinionAnalysis\" />
   </ItemGroup>
 
 </Project>

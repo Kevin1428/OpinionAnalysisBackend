@@ -1,6 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.WordCloudDTOs;
 using GraduationProjectBackend.Services.WordCloud;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -23,8 +22,9 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// 搜尋主題內容斷詞後的詞和頻率
         /// </remarks>
         /// <returns></returns>
+
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-        [Authorize]
+        //[Authorize]
         //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
 
         public async Task<ActionResult> TopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest)
@@ -35,6 +35,25 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                     wordCloudRequest.Topic,
                     wordCloudRequest.StartDate,
                     wordCloudRequest.EndDate);
+
+                return Ok(wordCloudResponseDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
+        public async Task<ActionResult> FakeTopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest, [FromServices] FakeWordCloudService fakeWordCloudService)
+        {
+            try
+            {
+                var wordCloudResponseDTO = await fakeWordCloudService.GetWordCloudResponseDTO(
+                    wordCloudRequest.Topic,
+                    wordCloudRequest.StartDate,
+                    wordCloudRequest.EndDate);
+
                 return Ok(wordCloudResponseDTO);
             }
             catch (Exception ex)
