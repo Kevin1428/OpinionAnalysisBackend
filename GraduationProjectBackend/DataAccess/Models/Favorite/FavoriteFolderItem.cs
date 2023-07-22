@@ -19,6 +19,7 @@ namespace GraduationProjectBackend.DataAccess.Models.Favorite
         [JsonIgnore]
         public FavoriteFolder? FavoriteFolder { get; set; }
 
+        [JsonIgnore]
         public int FavoriteItemId { get; set; }
 
         [ForeignKey("FavoriteItemId")]
