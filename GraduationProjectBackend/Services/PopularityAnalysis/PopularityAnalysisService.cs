@@ -48,7 +48,9 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
 
                 }
 
-                if (article.SearchDate >= startDate && article.SearchDate <= currentRangeEndDate)
+                if (article.SearchDate >= startDate
+                    && article.SearchDate <= currentRangeEndDate
+                    && (article.ArticleTitle!.Contains(topic) || article.Content.Contains(topic)))
                 {
                     discussCount += article.MessageCount!.All;
                 }
@@ -80,10 +82,8 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
                 }
             }
 
-            var PopularityAnalysisResponse = new PopularityAnalysisResponse(
-            DiscussNumber: discussNumber,
-            Dates: dateOfAnalysis
-        );
+            var PopularityAnalysisResponse = new PopularityAnalysisResponse(DiscussNumber: discussNumber,
+                                                                            Dates: dateOfAnalysis);
             return PopularityAnalysisResponse;
         }
 

@@ -5,6 +5,12 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Article
     {
+        //[JsonPropertyName("sentiment_count")]
+        //public SentimentCount? sentiment_count { get; set; }
+
+        public SentimentCount? sentiment_count { get; set; }
+
+
         [JsonPropertyName("article_id")]
         public string? ArticleId { get; set; }
         [JsonPropertyName("article_title")]
@@ -36,7 +42,6 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public DateOnly SearchDate { get; set; }
         [JsonPropertyName("content_sentiment")]
         public string ContentSentiment { get; set; }
-
     }
 
 
@@ -44,6 +49,8 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
     {
         [JsonPropertyName("push_content")]
         public string? PushContent { get; set; }
+        [JsonPropertyName("push_content_sentiment")]
+        public string? PushContentSentiment { get; set; }
 
         [JsonPropertyName("push_ipdatetime")]
         public string? PushIpDateTime { get; set; }
@@ -55,8 +62,6 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public string? PushUserId { get; set; }
         [JsonPropertyName("processed_push_content")]
         public IEnumerable<string>? ProcessedPushContent { get; set; }
-        [JsonPropertyName("sentiment_count")]
-        public IEnumerable<SentimentCount>? SentimentCounts { get; set; }
     }
 
     public class MessageCount
@@ -80,9 +85,9 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
     public class SentimentCount
     {
         [JsonPropertyName("negative")]
-        public int Negative;
+        public int Negative { get; set; }
         [JsonPropertyName("positive")]
-        public int Positive;
+        public int Positive { get; set; }
     }
 
     public class ArticleMapRoot

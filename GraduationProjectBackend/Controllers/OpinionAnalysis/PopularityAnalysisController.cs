@@ -1,6 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
 using GraduationProjectBackend.Services.PopularityAnalysis;
-using GraduationProjectBackend.Services.WordCloud;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -11,7 +10,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
     {
         private readonly IPopularityAnalysisService _popularityAnalysisService;
 
-        public PopularityAnalysisController(IWordCloudService wordCloudService, IPopularityAnalysisService popularityAnalysisService)
+        public PopularityAnalysisController(IPopularityAnalysisService popularityAnalysisService)
         {
             _popularityAnalysisService = popularityAnalysisService;
         }
@@ -33,7 +32,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest[FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
+        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest, [FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
         {
             return Ok(await fakePopularityAnalysisService.GetPopularityAnalysisResponse(
                 popularityAnalysisRequest.Topic,

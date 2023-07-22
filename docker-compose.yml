@@ -15,7 +15,8 @@ services:
       dockerfile: GraduationProjectBackend/Dockerfile
     volumes:
     -  ./GraduationProjectBackend/Utility/ArticleReader/AtricleDates:/app/Utility/ArticleReader/AtricleDates
-
+    ports:
+    - "53622:443"
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
