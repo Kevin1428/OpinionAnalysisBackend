@@ -60,10 +60,12 @@ builder.Services.AddSingleton<EncryptHelper>();
 builder.Services.AddSingleton<JwtHelper>();
 
 builder.Services.AddScoped<IWordCloudService, WordCloudService>();
-builder.Services.AddScoped<ISentimentAnalysisService, FakeSentimentAnalysisService>();
 builder.Services.AddScoped<IPopularityAnalysisService, PopularityAnalysisService>();
+builder.Services.AddScoped<ISentimentAnalysisService, FakeSentimentAnalysisService>();
 
 builder.Services.AddScoped<FakeWordCloudService>();
+builder.Services.AddScoped<FakeSentimentAnalysisService>();
+builder.Services.AddScoped<FakePopularityAnalysisService>();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

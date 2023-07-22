@@ -1,7 +1,6 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
 using GraduationProjectBackend.Services.PopularityAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -23,10 +22,23 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// </remarks>
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult> PopularityAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest)
         {
-            return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(popularityAnalysisRequest.Topic, popularityAnalysisRequest.StartDate, popularityAnalysisRequest.EndDate));
+            return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(
+                popularityAnalysisRequest.Topic,
+                popularityAnalysisRequest.StartDate,
+                popularityAnalysisRequest.EndDate));
+        }
+
+        [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
+        //[Authorize]
+        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest[FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
+        {
+            return Ok(await fakePopularityAnalysisService.GetPopularityAnalysisResponse(
+                popularityAnalysisRequest.Topic,
+                popularityAnalysisRequest.StartDate,
+                popularityAnalysisRequest.EndDate));
         }
     }
 }
