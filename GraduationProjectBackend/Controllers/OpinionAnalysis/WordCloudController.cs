@@ -15,7 +15,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             _wordCloudService = wordCloudService;
         }
         /// <summary>
-        /// 搜尋主題內容斷詞後的詞和頻率
+        /// 文字雲
         /// </summary>
         /// <param name="Topic"> 搜尋主題 </param>
         /// <remarks>
@@ -43,7 +43,10 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 return BadRequest(ex.Message);
             }
         }
-
+        /// <summary>
+        /// 假資料文字雲
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         public async Task<ActionResult> FakeTopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest, [FromServices] FakeWordCloudService fakeWordCloudService)
         {

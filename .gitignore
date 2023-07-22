@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/GraduationProjectBackend/Utility/ArticleReader/AtricleDates/Gossiping-2041-2235.json
+/GraduationProjectBackend/Utility/ArticleReader/Gossiping-2001-2040.json

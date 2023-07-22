@@ -15,7 +15,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             _sentimentAnalysisService = sentimentAnalysisService;
         }
         /// <summary>
-        /// 熱度分析
+        /// 正負向分析
         /// </summary>
         /// <remarks>
         /// </remarks>
@@ -28,6 +28,13 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                                                                                    popularityAnalysisRequest.StartDate,
                                                                                    popularityAnalysisRequest.EndDate));
         }
+
+        /// <summary>
+        /// 假資料正負向分析
+        /// </summary>
+        /// <param name="popularityAnalysisRequest"></param>
+        /// <param name="fakeSentimentAnalysisService"></param>
+        /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
 
         public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)

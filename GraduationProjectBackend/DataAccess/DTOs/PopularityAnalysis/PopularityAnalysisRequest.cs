@@ -5,7 +5,7 @@
         /// <summary>
         /// 搜尋主題
         /// </summary>
-        /// <example> 張敏琪又晚15分 </example>
+        /// <example>戰爭 </example>
         public string Topic { get; set; }
 
         /// <summary>
