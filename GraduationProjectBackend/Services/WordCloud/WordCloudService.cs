@@ -6,17 +6,43 @@ namespace GraduationProjectBackend.Services.WordCloud
 {
     public class WordCloudService : IWordCloudService
     {
+        //public async Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        //{
+        //    Dictionary<string, int> keywordCount = new Dictionary<string, int>();
+        //    keywordCount = await RoughAnalysis(topic, startDate, endDate, keywordCount);
+
+        //    var sortedKeywordCount = keywordCount.OrderByDescending(pair => pair.Value).Take(20).ToList();
+        //    WordCloudResponse response = new WordCloudResponse(
+        //        wordSegment: sortedKeywordCount.Select(d => d.Key).ToList(),
+        //        frequency: sortedKeywordCount.Select(d => d.Value).ToList());
+
+        //    return response;
+
+        //}
+        private LinQArticleHelper LinQArticleHelper;
+
+        public WordCloudService(LinQArticleHelper linQArticleHelper)
+        {
+            LinQArticleHelper = linQArticleHelper;
+        }
+
         public async Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
         {
-            Dictionary<string, int> keywordCount = new Dictionary<string, int>();
-            keywordCount = await RoughAnalysis(topic, startDate, endDate, keywordCount);
+            var articles = LinQArticleHelper.Articles;
+            var article = articles.Where(A => A.SearchDate >= startDate
+                                              && A.SearchDate <= endDate
+                                              && (A.ArticleTitle!.Contains(topic) || A.Content.Contains(topic))).ToList();
 
-            var sortedKeywordCount = keywordCount.OrderByDescending(pair => pair.Value).Take(20).ToList();
-            WordCloudResponse response = new WordCloudResponse(
-                wordSegment: sortedKeywordCount.Select(d => d.Key).ToList(),
-                frequency: sortedKeywordCount.Select(d => d.Value).ToList());
+            var content = articles.SelectMany(A => A.ProcessedContent).ToList();
+            var pushContent = article.SelectMany(A => A.Messages.SelectMany(M => M.ProcessedPushContent).ToList()).ToList();
 
-            return response;
+            content.AddRange(pushContent);
+
+            var dic = content.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count()).OrderByDescending(D => D.Value).Take(20);
+            var wordSegment = dic.Select(pair => pair.Key).ToList();
+            var frequency = dic.Select(pair => pair.Value).ToList();
+
+            return await Task.FromResult(new WordCloudResponse(wordSegment, frequency));
 
         }
 
@@ -65,10 +91,11 @@ namespace GraduationProjectBackend.Services.WordCloud
 
         private void AddKeywordCount(string keyword, ref Dictionary<string, int> keywordCount)
         {
-            if (!keywordCount.TryAdd(keyword, 1))
-            {
-                keywordCount[keyword]++;
-            }
+            if (!keyword.Equals(""))
+                if (!keywordCount.TryAdd(keyword, 1))
+                {
+                    keywordCount[keyword]++;
+                }
         }
 
         private void AddTitleAndContent(Article article, ref Dictionary<string, int> keywordCount)

@@ -8,6 +8,7 @@ using GraduationProjectBackend.Services.Member;
 using GraduationProjectBackend.Services.PopularityAnalysis;
 using GraduationProjectBackend.Services.SentimentAnalysis;
 using GraduationProjectBackend.Services.WordCloud;
+using GraduationProjectBackend.Utility.ArticleReader;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -93,6 +94,8 @@ builder.Services.AddCors(policyBuilder =>
 
 builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
+LinQArticleHelper linQArticleHelperInstance = new LinQArticleHelper();
+builder.Services.AddSingleton<LinQArticleHelper>(linQArticleHelperInstance);
 
 var app = builder.Build();
 

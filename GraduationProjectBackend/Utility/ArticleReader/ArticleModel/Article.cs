@@ -38,8 +38,16 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public IEnumerable<string> ProcessedContent { get; set; }
         [JsonPropertyName("processed_article_title")]
         public IEnumerable<string>? ProcessedArticleTitle { get; set; }
-
         public DateOnly SearchDate { get; set; }
+        [JsonPropertyName("search_date")]
+        public string searchDate
+        {
+            get => searchDate;
+            set
+            {
+                SearchDate = DateOnly.Parse(value);
+            }
+        }
         [JsonPropertyName("content_sentiment")]
         public string ContentSentiment { get; set; }
     }
