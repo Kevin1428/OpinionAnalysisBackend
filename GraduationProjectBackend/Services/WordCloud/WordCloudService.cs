@@ -26,12 +26,10 @@ namespace GraduationProjectBackend.Services.WordCloud
             LinQArticleHelper = linQArticleHelper;
         }
 
-        public async Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        public async Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
         {
             var articles = LinQArticleHelper.Articles;
-            var article = articles.Where(A => A.SearchDate >= startDate
-                                              && A.SearchDate <= endDate
-                                              && (A.ArticleTitle!.Contains(topic) || A.Content.Contains(topic))).ToList();
+            var article = LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
 
             var content = articles.SelectMany(A => A.ProcessedContent).ToList();
             var pushContent = article.SelectMany(A => A.Messages.SelectMany(M => M.ProcessedPushContent).ToList()).ToList();
@@ -45,6 +43,8 @@ namespace GraduationProjectBackend.Services.WordCloud
             return await Task.FromResult(new WordCloudResponse(wordSegment, frequency));
 
         }
+
+
 
         private async Task<Dictionary<string, int>> RoughAnalysis(string topic, DateOnly startDate, DateOnly endDate, Dictionary<string, int> keywordCount)
         {
@@ -131,6 +131,40 @@ namespace GraduationProjectBackend.Services.WordCloud
                         AddKeywordCount(keyword, ref keywordCount);
                     }
             }
+        }
+
+        public async Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        {
+            var articles = LinQArticleHelper.Articles;
+            var article = LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate).Where(a => a.ContentSentiment.Equals("positive"));
+
+            var content = articles.SelectMany(A => A.ProcessedContent).ToList();
+            var pushContent = article.SelectMany(A => A.Messages.Where(M => M.PushContentSentiment.Equals("positive")).SelectMany(M => M.ProcessedPushContent).ToList()).ToList();
+
+            content.AddRange(pushContent);
+
+            var dic = content.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count()).OrderByDescending(D => D.Value).Take(20);
+            var wordSegment = dic.Select(pair => pair.Key).ToList();
+            var frequency = dic.Select(pair => pair.Value).ToList();
+
+            return await Task.FromResult(new WordCloudResponse(wordSegment, frequency));
+        }
+
+        public async Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        {
+            var articles = LinQArticleHelper.Articles;
+            var article = LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate).Where(a => a.ContentSentiment.Equals("negative"));
+
+            var content = articles.SelectMany(A => A.ProcessedContent).ToList();
+            var pushContent = article.SelectMany(A => A.Messages.Where(M => M.PushContentSentiment.Equals("negative")).SelectMany(M => M.ProcessedPushContent).ToList()).ToList();
+
+            content.AddRange(pushContent);
+
+            var dic = content.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count()).OrderByDescending(D => D.Value).Take(20);
+            var wordSegment = dic.Select(pair => pair.Key).ToList();
+            var frequency = dic.Select(pair => pair.Value).ToList();
+
+            return await Task.FromResult(new WordCloudResponse(wordSegment, frequency));
         }
     }
 

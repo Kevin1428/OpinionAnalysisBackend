@@ -15,7 +15,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             _wordCloudService = wordCloudService;
         }
         /// <summary>
-        /// 文字雲
+        /// 正負向都有的文字雲
         /// </summary>
         /// <param name="Topic"> 搜尋主題 </param>
         /// <remarks>
@@ -31,7 +31,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         {
             try
             {
-                var wordCloudResponseDTO = await _wordCloudService.GetWordCloudResponseDTO(
+                var wordCloudResponseDTO = await _wordCloudService.GetFullWordCloudResponseDTO(
                     wordCloudRequest.Topic,
                     wordCloudRequest.StartDate,
                     wordCloudRequest.EndDate);
@@ -44,6 +44,57 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             }
         }
         /// <summary>
+        /// 正向
+        /// </summary>
+        /// <param name="wordCloudRequest"></param>
+        /// <returns></returns>
+        [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}/Positive")]
+        //[Authorize]
+        //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
+
+        public async Task<ActionResult> TopicContentSegmentByPositive([FromRoute] WordCloudRequest wordCloudRequest)
+        {
+            try
+            {
+                var wordCloudResponseDTO = await _wordCloudService.GetPositiveWordCloudResponseDTO(
+                    wordCloudRequest.Topic,
+                    wordCloudRequest.StartDate,
+                    wordCloudRequest.EndDate);
+
+                return Ok(wordCloudResponseDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 負向
+        /// </summary>
+        /// <param name="wordCloudRequest"></param>
+        /// <returns></returns>
+        [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}/Negative")]
+        //[Authorize]
+        //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
+
+        public async Task<ActionResult> TopicContentSegmentByNegative([FromRoute] WordCloudRequest wordCloudRequest)
+        {
+            try
+            {
+                var wordCloudResponseDTO = await _wordCloudService.GetNegativeWordCloudResponseDTO(
+                    wordCloudRequest.Topic,
+                    wordCloudRequest.StartDate,
+                    wordCloudRequest.EndDate);
+
+                return Ok(wordCloudResponseDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 假資料文字雲
         /// </summary>
         /// <returns></returns>
@@ -52,7 +103,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         {
             try
             {
-                var wordCloudResponseDTO = await fakeWordCloudService.GetWordCloudResponseDTO(
+                var wordCloudResponseDTO = await fakeWordCloudService.GetFullWordCloudResponseDTO(
                     wordCloudRequest.Topic,
                     wordCloudRequest.StartDate,
                     wordCloudRequest.EndDate);

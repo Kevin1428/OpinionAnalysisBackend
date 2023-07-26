@@ -95,10 +95,7 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
         public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
         {
 
-            var articles = LinQArticleHelper.Articles;
-            var article = articles.Where(A => A.SearchDate >= startDate
-                                              && A.SearchDate <= endDate
-                                              && (A.ArticleTitle!.Contains(topic) || A.Content?.Contains(topic) == true)).ToList();
+            var article = LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {

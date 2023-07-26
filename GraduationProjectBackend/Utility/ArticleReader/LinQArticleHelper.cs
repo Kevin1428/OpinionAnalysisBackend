@@ -22,6 +22,14 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                 Articles.AddRange(articleMapRoot.Articles!);
             }
         }
+
+        public List<Article> GetArticlesInDateRange(string topic, DateOnly startDate, DateOnly endDate)
+        {
+            return Articles.Where(A => A.SearchDate >= startDate
+                                              && A.SearchDate <= endDate
+                                              && (A.ArticleTitle!.Contains(topic) || A.Content?.Contains(topic) == true)).ToList();
+
+        }
     }
 }
 

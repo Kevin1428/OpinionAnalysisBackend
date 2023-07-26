@@ -105,10 +105,7 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
 
         public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
         {
-            var articles = linQArticleHelper.Articles;
-            var article = articles.Where(A => A.SearchDate >= startDate
-                                              && A.SearchDate <= endDate
-                                              && (A.ArticleTitle!.Contains(topic) || A.Content?.Contains(topic) == true)).ToList();
+            var article = linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
@@ -128,7 +125,7 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             var negtiveNumber = new List<int>();
 
 
-            while (currentDate < groupByDayArticles[0].Date)
+            while (currentDate < groupByDayArticles.FirstOrDefault()?.Date)
             {
                 currentDate = FillZero(DayRange, currentDate, dateOfAnalysis, postiveNumber, negtiveNumber);
             }

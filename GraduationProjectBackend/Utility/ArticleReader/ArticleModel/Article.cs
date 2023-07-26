@@ -15,6 +15,10 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public string? ArticleId { get; set; }
         [JsonPropertyName("article_title")]
         public string? ArticleTitle { get; set; }
+
+        [JsonPropertyName("article_title_sentiment")]
+        public string? ArticleTitleSentiment { get; set; } = "";
+
         [JsonPropertyName("author")]
         public string? Author { get; set; }
         [JsonPropertyName("board")]

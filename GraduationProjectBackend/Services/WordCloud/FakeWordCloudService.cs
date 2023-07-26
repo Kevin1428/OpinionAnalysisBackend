@@ -4,7 +4,7 @@ namespace GraduationProjectBackend.Services.WordCloud
 {
     public class FakeWordCloudService : IWordCloudService
     {
-        public Task<WordCloudResponse> GetWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
         {
             WordCloudResponse response = new(
                 wordSegment: new List<string>(){
@@ -21,6 +21,16 @@ namespace GraduationProjectBackend.Services.WordCloud
                 })
             ;
             return Task.FromResult(response);
+        }
+
+        public Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        {
+            throw new NotImplementedException();
         }
     }
 }
