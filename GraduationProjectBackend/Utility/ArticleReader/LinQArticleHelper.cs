@@ -10,16 +10,20 @@ namespace GraduationProjectBackend.Utility.ArticleReader
 
         public LinQArticleHelper()
         {
+        }
+
+        public async Task LoadArticle()
+        {
             string filePath = Directory.GetCurrentDirectory() + @"/Utility/ArticleReader/AtricleDates/";
-            string[] files = Directory.GetFiles(filePath, "*.json");
+            var files = Directory.EnumerateFiles(filePath, "*.json");
 
-            for (int i = 0; i < files.Length; i++)
+            foreach (var file in files)
             {
-                string file = files[i];
-                string articleJson = File.ReadAllText(file);
-                ArticleMapRoot articleMapRoot = JsonSerializer.Deserialize<ArticleMapRoot>(articleJson)!;
+                FileStream fs = new FileStream(file, FileMode.Open);
 
-                Articles.AddRange(articleMapRoot.Articles!);
+                ArticleMapRoot? articleMapRoot = await JsonSerializer.DeserializeAsync<ArticleMapRoot>(fs);
+
+                Articles.AddRange(articleMapRoot!.Articles!);
             }
         }
 

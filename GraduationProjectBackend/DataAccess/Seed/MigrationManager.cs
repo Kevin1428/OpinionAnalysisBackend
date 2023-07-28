@@ -1,4 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.Context;
+using Microsoft.EntityFrameworkCore;
 
 public static class MigrationManager
 {
@@ -10,7 +11,7 @@ public static class MigrationManager
             {
                 try
                 {
-                    //appContext.Database.Migrate();
+                    appContext.Database.Migrate();
                 }
                 catch (Exception ex)
                 {

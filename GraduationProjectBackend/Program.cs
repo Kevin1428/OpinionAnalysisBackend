@@ -95,6 +95,7 @@ builder.Services.AddCors(policyBuilder =>
 builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
 LinQArticleHelper linQArticleHelperInstance = new LinQArticleHelper();
+await linQArticleHelperInstance.LoadArticle();
 builder.Services.AddSingleton<LinQArticleHelper>(linQArticleHelperInstance);
 
 var app = builder.Build();
