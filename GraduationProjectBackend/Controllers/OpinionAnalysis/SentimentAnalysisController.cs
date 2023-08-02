@@ -22,26 +22,28 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> SentimentAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest)
+        public async Task<ActionResult> SentimentAnalysis([FromRoute] SentimentAnalysisRequest.Route route, [FromQuery] SentimentAnalysisRequest.Query query)
         {
-            return Ok(await _sentimentAnalysisService.GetSentimentAnalysisResponse(popularityAnalysisRequest.Topic,
-                                                                                   popularityAnalysisRequest.StartDate,
-                                                                                   popularityAnalysisRequest.EndDate));
+            return Ok(await _sentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
+                                                                                   route.StartDate,
+                                                                                   route.EndDate,
+                                                                                   query.dateRange));
         }
 
         /// <summary>
         /// 假資料正負向分析
         /// </summary>
-        /// <param name="popularityAnalysisRequest"></param>
+        /// <param name="route"></param>
         /// <param name="fakeSentimentAnalysisService"></param>
         /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
 
-        public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] SentimentAnalysisRequest popularityAnalysisRequest, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)
+        public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] SentimentAnalysisRequest.Route route, [FromQuery] SentimentAnalysisRequest.Query query, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)
         {
-            return Ok(await fakeSentimentAnalysisService.GetSentimentAnalysisResponse(popularityAnalysisRequest.Topic,
-                                                                                      popularityAnalysisRequest.StartDate,
-                                                                                      popularityAnalysisRequest.EndDate));
+            return Ok(await fakeSentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
+                                                                                      route.StartDate,
+                                                                                      route.EndDate,
+                                                                                      query.dateRange));
         }
     }
 }

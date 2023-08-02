@@ -12,7 +12,7 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             this.linQArticleHelper = linQArticleHelper;
         }
 
-        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
+        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
         {
             var article = await linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
 
@@ -24,7 +24,7 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             }).ToList();
 
 
-            var dayRange = 30;
+            var dayRange = dateRange;
             var posCount = 0;
             var negCount = 0;
             var leftDate = startDate;

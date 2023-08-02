@@ -22,12 +22,13 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> PopularityAnalysis([FromRoute] PopularityAnalysisRequest popularityAnalysisRequest)
+        public async Task<ActionResult> PopularityAnalysis([FromRoute] PopularityAnalysisRequest.Route route, [FromQuery] PopularityAnalysisRequest.Query query)
         {
             return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(
-                popularityAnalysisRequest.Topic,
-                popularityAnalysisRequest.StartDate,
-                popularityAnalysisRequest.EndDate));
+                route.Topic,
+                route.StartDate,
+                route.EndDate,
+                query.dateRange));
         }
 
         /// <summary>
@@ -36,12 +37,13 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] PopularityAnalysisRequest popularityAnalysisRequest, [FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
+        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] PopularityAnalysisRequest.Route route, [FromQuery] PopularityAnalysisRequest.Query query, [FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
         {
             return Ok(await fakePopularityAnalysisService.GetPopularityAnalysisResponse(
-                popularityAnalysisRequest.Topic,
-                popularityAnalysisRequest.StartDate,
-                popularityAnalysisRequest.EndDate));
+                route.Topic,
+                route.StartDate,
+                route.EndDate,
+                query.dateRange));
         }
     }
 }

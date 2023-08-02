@@ -13,7 +13,7 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
             LinQArticleHelper = linQArticleHelper;
         }
 
-        public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
+        public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
         {
 
             var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
@@ -25,7 +25,7 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
             }).ToList();
 
 
-            var dayRange = 30;
+            var dayRange = dateRange;
             var disCount = 0;
             var leftDate = startDate;
             var rightDate = leftDate.AddDays(dayRange);

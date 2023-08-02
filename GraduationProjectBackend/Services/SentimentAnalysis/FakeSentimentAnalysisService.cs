@@ -1,11 +1,10 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
-using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
 
 namespace GraduationProjectBackend.Services.SentimentAnalysis
 {
     public class FakeSentimentAnalysisService : ISentimentAnalysisService
     {
-        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> postiveNumber = new List<int>();

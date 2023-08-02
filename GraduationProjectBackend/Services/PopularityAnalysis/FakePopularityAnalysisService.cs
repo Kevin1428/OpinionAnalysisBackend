@@ -4,7 +4,7 @@ namespace GraduationProjectBackend.Services.PopularityAnalysis
 {
     public class FakePopularityAnalysisService : IPopularityAnalysisService
     {
-        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> discussNumber = new List<int>();
