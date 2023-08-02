@@ -8,52 +8,53 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         //[JsonPropertyName("sentiment_count")]
         //public SentimentCount? sentiment_count { get; set; }
 
-        public SentimentCount? sentiment_count { get; set; }
+        public SentimentCount? sentiment_count { get; set; } = new SentimentCount();
 
 
         [JsonPropertyName("article_id")]
         public string? ArticleId { get; set; }
+
         [JsonPropertyName("article_title")]
         public string? ArticleTitle { get; set; }
+
+        [JsonPropertyName("author")]
+        public string? Author { get; set; }
 
         [JsonPropertyName("article_title_sentiment")]
         public string? ArticleTitleSentiment { get; set; } = "";
 
-        [JsonPropertyName("author")]
-        public string? Author { get; set; }
         [JsonPropertyName("board")]
         public string? Board { get; set; }
+
         [JsonPropertyName("content")]
         public string? Content { get; set; }
 
         [JsonPropertyName("date")]
         public string? StringDate { get; set; }
 
+        [JsonPropertyName("search_date")]
+        public string SearchDate { get; set; }
+
         [JsonPropertyName("ip")]
         public string? Ip { get; set; }
+
         [JsonPropertyName("message_count")]
-        public MessageCount? MessageCount { get; set; }
-        [JsonPropertyName("messages")]
-        public List<Message>? Messages { get; set; }
+        public MessageCount? MessageCount { get; set; } = new MessageCount();
+
         [JsonPropertyName("url")]
         public string? Url { get; set; }
 
         [JsonPropertyName("processed_content")]
-        public IEnumerable<string> ProcessedContent { get; set; }
+        public IEnumerable<string> ProcessedContent { get; set; } = new List<string>();
+
         [JsonPropertyName("processed_article_title")]
-        public IEnumerable<string>? ProcessedArticleTitle { get; set; }
-        public DateOnly SearchDate { get; set; }
-        [JsonPropertyName("search_date")]
-        public string searchDate
-        {
-            get => searchDate;
-            set
-            {
-                SearchDate = DateOnly.Parse(value);
-            }
-        }
+        public IEnumerable<string>? ProcessedArticleTitle { get; set; } = new List<string>();
+
         [JsonPropertyName("content_sentiment")]
-        public string ContentSentiment { get; set; }
+        public string ContentSentiment { get; set; } = "";
+
+        [JsonPropertyName("messages")]
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 
 
@@ -62,10 +63,16 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("push_content")]
         public string? PushContent { get; set; }
         [JsonPropertyName("push_content_sentiment")]
-        public string? PushContentSentiment { get; set; }
+        public string? PushContentSentiment { get; set; } = "";
 
         [JsonPropertyName("push_ipdatetime")]
         public string? PushIpDateTime { get; set; }
+
+        [JsonPropertyName("push_search_date")]
+        public string? PushSearchDate { get; set; }
+
+        [JsonPropertyName("push_ip")]
+        public string? PushIp { get; set; }
 
         [JsonPropertyName("push_tag")]
         public string? PushTag { get; set; }
@@ -73,7 +80,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("push_userid")]
         public string? PushUserId { get; set; }
         [JsonPropertyName("processed_push_content")]
-        public IEnumerable<string>? ProcessedPushContent { get; set; }
+        public IEnumerable<string>? ProcessedPushContent { get; set; } = new List<string>();
     }
 
     public class MessageCount
@@ -97,9 +104,9 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
     public class SentimentCount
     {
         [JsonPropertyName("negative")]
-        public int Negative { get; set; }
+        public int Negative { get; set; } = 0;
         [JsonPropertyName("positive")]
-        public int Positive { get; set; }
+        public int Positive { get; set; } = 0;
     }
 
     public class ArticleMapRoot
@@ -107,27 +114,5 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("articles")]
         public List<Article>? Articles { get; set; }
     }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

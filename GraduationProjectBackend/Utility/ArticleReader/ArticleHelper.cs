@@ -33,7 +33,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                                                DateTimeStyles.None,
                                                out var parsedDate);
 
-                        art.SearchDate = DateOnly.FromDateTime(parsedDate);
+                        //art.SearchDate = DateOnly.FromDateTime(parsedDate);
                         yield return art;
                     }
                 }

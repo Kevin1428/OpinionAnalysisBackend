@@ -96,7 +96,8 @@ builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
 LinQArticleHelper linQArticleHelperInstance = new LinQArticleHelper();
 await linQArticleHelperInstance.LoadArticle();
-builder.Services.AddSingleton<LinQArticleHelper>(linQArticleHelperInstance);
+
+builder.Services.AddTransient<LinQArticleHelper>();
 
 var app = builder.Build();
 
