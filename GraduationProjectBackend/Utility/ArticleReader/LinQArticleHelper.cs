@@ -1,5 +1,6 @@
 ﻿using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 using Nest;
+using StackExchange.Redis;
 using System.Text.Json;
 
 namespace GraduationProjectBackend.Utility.ArticleReader
@@ -8,9 +9,11 @@ namespace GraduationProjectBackend.Utility.ArticleReader
     public class LinQArticleHelper
     {
         public List<Article> Articles { get; set; } = new List<Article>();
+        private ConnectionMultiplexer _redisConnection;
 
-        public LinQArticleHelper()
+        public LinQArticleHelper(ConnectionMultiplexer redisConnection)
         {
+            _redisConnection = redisConnection;
         }
 
         public async Task LoadArticle()
@@ -30,7 +33,35 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             }
         }
 
-        public async Task<List<Article>> GetArticlesInDateRange(string topic, DateOnly startDate, DateOnly endDate)
+        public async Task<List<Article>> GetArticlesInDateRange(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        {
+            var redisDb = _redisConnection.GetDatabase();
+            var dataKey = topic + startDate.ToString() + endDate.ToString() + dateRange.ToString() + isExactMatch?.ToString();
+            var articlesCache = await redisDb.HashGetAsync(dataKey, "ElsData");
+
+
+            if (articlesCache.IsNull)
+            {
+                var articles = await GetElsDataAsync(topic, startDate, endDate, isExactMatch);
+
+                await redisDb.HashSetAsync(dataKey, new HashEntry[]
+                {
+                    new HashEntry("ElsData",JsonSerializer.Serialize(articles))
+                });
+                redisDb.KeyExpire(dataKey, TimeSpan.FromSeconds(60));
+
+
+                return articles;
+            }
+            else
+            {
+                return JsonSerializer.Deserialize<List<Article>>(articlesCache!)!;
+            }
+
+
+        }
+
+        private static async Task<List<Article>> GetElsDataAsync(string topic, DateOnly startDate, DateOnly endDate, bool? isExactMatch)
         {
             var searchResult = new List<Article>();
             var node = new Uri("http://elasticsearch:9200");
@@ -40,7 +71,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             var indexName = "articles";
 
             var scrollTimeout = "1m"; // 設定 scroll 的逾時時間
-            var scrollSize = 5000; // 每次 scroll 擷取的文件數量
+            var scrollSize = 100; // 每次 scroll 擷取的文件數量
 
             var searchResponse = await client.SearchAsync<Article>(s => s
                                         .Index("articles")
@@ -62,7 +93,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                                                     )
                                                 )
                                             )
-                                          ).Size(5000)
+                                          ).Size(scrollSize)
                                     .Scroll(scrollTimeout));
 
             while (searchResponse.IsValid && !string.IsNullOrEmpty(searchResponse.ScrollId) && searchResponse.Documents.Any())
@@ -77,7 +108,6 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                 }
             }
             return (searchResult.OrderBy(article => DateOnly.Parse(article.SearchDate)).ToList());
-
         }
     }
 }

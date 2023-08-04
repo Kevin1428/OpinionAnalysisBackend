@@ -1,5 +1,5 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.WordCloudDTOs;
-using GraduationProjectBackend.Services.WordCloud;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis;
+using GraduationProjectBackend.Services.OpinionAnalysis.WordCloud;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -27,14 +27,17 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         //[Authorize]
         //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
 
-        public async Task<ActionResult> TopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest)
+        public async Task<ActionResult> TopicContentSegment([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             try
             {
                 var wordCloudResponseDTO = await _wordCloudService.GetFullWordCloudResponseDTO(
-                    wordCloudRequest.Topic,
-                    wordCloudRequest.StartDate,
-                    wordCloudRequest.EndDate);
+                    route.Topic,
+                    route.StartDate,
+                    route.EndDate,
+                    query.dateRange,
+                    query.isExactMatch
+                    );
 
                 return Ok(wordCloudResponseDTO);
             }
@@ -52,14 +55,14 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         //[Authorize]
         //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
 
-        public async Task<ActionResult> TopicContentSegmentByPositive([FromRoute] WordCloudRequest wordCloudRequest)
+        public async Task<ActionResult> TopicContentSegmentByPositive([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             try
             {
                 var wordCloudResponseDTO = await _wordCloudService.GetPositiveWordCloudResponseDTO(
-                    wordCloudRequest.Topic,
-                    wordCloudRequest.StartDate,
-                    wordCloudRequest.EndDate);
+                route.Topic,
+                route.StartDate,
+                route.EndDate, query.dateRange, query.isExactMatch);
 
                 return Ok(wordCloudResponseDTO);
             }
@@ -77,14 +80,12 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         //[Authorize]
         //[ProducesResponseType(typeof(WordCloudResponseDTO), StatusCodes.Status200OK)]
 
-        public async Task<ActionResult> TopicContentSegmentByNegative([FromRoute] WordCloudRequest wordCloudRequest)
+        public async Task<ActionResult> TopicContentSegmentByNegative([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             try
             {
-                var wordCloudResponseDTO = await _wordCloudService.GetNegativeWordCloudResponseDTO(
-                    wordCloudRequest.Topic,
-                    wordCloudRequest.StartDate,
-                    wordCloudRequest.EndDate);
+                var wordCloudResponseDTO = await _wordCloudService.GetNegativeWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.dateRange, query.isExactMatch);
+
 
                 return Ok(wordCloudResponseDTO);
             }
@@ -99,14 +100,12 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// </summary>
         /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-        public async Task<ActionResult> FakeTopicContentSegment([FromRoute] WordCloudRequest wordCloudRequest, [FromServices] FakeWordCloudService fakeWordCloudService)
+        public async Task<ActionResult> FakeTopicContentSegment([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query, [FromServices] FakeWordCloudService fakeWordCloudService)
         {
             try
             {
-                var wordCloudResponseDTO = await fakeWordCloudService.GetFullWordCloudResponseDTO(
-                    wordCloudRequest.Topic,
-                    wordCloudRequest.StartDate,
-                    wordCloudRequest.EndDate);
+                var wordCloudResponseDTO = await fakeWordCloudService.GetFullWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.dateRange, query.isExactMatch);
+
 
                 return Ok(wordCloudResponseDTO);
             }

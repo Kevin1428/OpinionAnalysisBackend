@@ -1,10 +1,10 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis;
 
-namespace GraduationProjectBackend.Services.PopularityAnalysis
+namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
 {
     public class FakePopularityAnalysisService : IPopularityAnalysisService
     {
-        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
+        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> discussNumber = new List<int>();

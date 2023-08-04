@@ -1,6 +1,6 @@
-﻿namespace GraduationProjectBackend.DataAccess.DTOs.PopularityAnalysis
+﻿namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis
 {
-    public class PopularityAnalysisRequest
+    public class OpinionAnalysisRequest
     {
         public class Route
         {
@@ -29,6 +29,10 @@
             /// </summary>
             /// <example>30</example>
             public int dateRange { get; set; }
+            /// <summary>
+            /// 是不是要完全匹配到的資料才搜尋 預設false
+            /// </summary>
+            public bool? isExactMatch { get; set; }
         }
     }
 }

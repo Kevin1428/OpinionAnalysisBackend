@@ -1,10 +1,10 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.WordCloudDTOs;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
 
-namespace GraduationProjectBackend.Services.WordCloud
+namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
 {
     public class FakeWordCloudService : IWordCloudService
     {
-        public Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             WordCloudResponse response = new(
                 wordSegment: new List<string>(){
@@ -23,12 +23,12 @@ namespace GraduationProjectBackend.Services.WordCloud
             return Task.FromResult(response);
         }
 
-        public Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             throw new NotImplementedException();
         }
 
-        public Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate)
+        public Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             throw new NotImplementedException();
         }

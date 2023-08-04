@@ -1,7 +1,8 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
 using GraduationProjectBackend.Utility.ArticleReader;
+using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 
-namespace GraduationProjectBackend.Services.SentimentAnalysis
+namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
     public class SentimentAnalysisService : ISentimentAnalysisService
     {
@@ -12,15 +13,15 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             this.linQArticleHelper = linQArticleHelper;
         }
 
-        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
+        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
-            var article = await linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate);
+            var article = await linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
                 Date = DateOnly.Parse(g.Key),
                 Positive = g.Sum(A => A.sentiment_count.Positive),
-                Negative = g.Sum(A => A.sentiment_count.Negative)
+                Negative = g.Sum(A => A.sentiment_count.Negative),
             }).ToList();
 
 
@@ -33,6 +34,8 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             var postiveNumber = new List<int>();
             var negtiveNumber = new List<int>();
 
+            var posHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
+            var negHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
 
             while (leftDate < endDate)
             {
@@ -40,9 +43,13 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
 
                 posCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Positive);
                 postiveNumber.Add(posCount);
+                posHotArticles.TryAdd(leftDate, article.Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).OrderByDescending(o => o.sentiment_count!.Positive).Select(o => o.ToAtricleUserView()).Take(1).ToList());
+
 
                 negCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Negative);
                 negtiveNumber.Add(negCount);
+                negHotArticles.TryAdd(leftDate, article.Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).OrderByDescending(o => o.sentiment_count!.Negative).Select(o => o.ToAtricleUserView()).Take(1).ToList());
+
 
                 leftDate = rightDate;
                 rightDate = rightDate.AddDays(dayRange);
@@ -51,7 +58,9 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
             var sentimentAnalysisResponse = new SentimentAnalysisResponse(
                     PositiveNumber: postiveNumber,
                     NegativeNumber: negtiveNumber,
-                    Dates: dateOfAnalysis
+                    Dates: dateOfAnalysis,
+                    NegHotArticle: negHotArticles,
+                    PosHotArticle: posHotArticles
                 );
             return sentimentAnalysisResponse;
         }

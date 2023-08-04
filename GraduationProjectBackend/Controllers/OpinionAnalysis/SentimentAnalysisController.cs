@@ -1,5 +1,6 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
-using GraduationProjectBackend.Services.SentimentAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
+using GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduationProjectBackend.Controllers.OpinionAnalysis
@@ -22,12 +23,14 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> SentimentAnalysis([FromRoute] SentimentAnalysisRequest.Route route, [FromQuery] SentimentAnalysisRequest.Query query)
+        public async Task<ActionResult> SentimentAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             return Ok(await _sentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
                                                                                    route.StartDate,
                                                                                    route.EndDate,
-                                                                                   query.dateRange));
+                                                                                   query.dateRange,
+                                                                                   query.isExactMatch
+                                                                                   ));
         }
 
         /// <summary>
@@ -38,12 +41,12 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         /// <returns></returns>
         [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
 
-        public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] SentimentAnalysisRequest.Route route, [FromQuery] SentimentAnalysisRequest.Query query, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)
+        public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)
         {
             return Ok(await fakeSentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
                                                                                       route.StartDate,
                                                                                       route.EndDate,
-                                                                                      query.dateRange));
+                                                                                      query.dateRange, query.isExactMatch));
         }
     }
 }

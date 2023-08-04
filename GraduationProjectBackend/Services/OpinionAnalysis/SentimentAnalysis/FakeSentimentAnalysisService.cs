@@ -1,10 +1,10 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.SentimentAnalysis;
+﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
 
-namespace GraduationProjectBackend.Services.SentimentAnalysis
+namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
     public class FakeSentimentAnalysisService : ISentimentAnalysisService
     {
-        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange)
+        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> postiveNumber = new List<int>();
@@ -23,7 +23,7 @@ namespace GraduationProjectBackend.Services.SentimentAnalysis
                     NegativeNumber: negtiveNumber,
                     Dates: dateOfAnalysis
                 );
-            return Task.FromResult<SentimentAnalysisResponse>(PopularityAnalysisResponse);
+            return Task.FromResult(PopularityAnalysisResponse);
         }
     }
 }

@@ -55,6 +55,17 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
 
         [JsonPropertyName("messages")]
         public List<Message> Messages { get; set; } = new List<Message>();
+
+        public ArticleUserView ToAtricleUserView()
+        {
+            return new ArticleUserView(
+                ArticleTitle: ArticleTitle,
+                ArticleDate: SearchDate,
+                //ArticleContent: Content,
+                Url: Url,
+                MessageCount: MessageCount!.All,
+                SentimentCount: sentiment_count);
+        }
     }
 
 
@@ -114,5 +125,16 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("articles")]
         public List<Article>? Articles { get; set; }
     }
+
+    public record ArticleUserView(
+        string? ArticleTitle,
+        string ArticleDate,
+        //string ArticleContent,
+        string Url,
+        int MessageCount,
+        SentimentCount SentimentCount
+        );
+
+
 }
 

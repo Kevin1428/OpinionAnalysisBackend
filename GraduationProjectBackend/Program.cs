@@ -5,14 +5,15 @@ using GraduationProjectBackend.Filter.Swagger;
 using GraduationProjectBackend.Helper.Member;
 using GraduationProjectBackend.Services.Favorite;
 using GraduationProjectBackend.Services.Member;
-using GraduationProjectBackend.Services.PopularityAnalysis;
-using GraduationProjectBackend.Services.SentimentAnalysis;
-using GraduationProjectBackend.Services.WordCloud;
+using GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis;
+using GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis;
+using GraduationProjectBackend.Services.OpinionAnalysis.WordCloud;
 using GraduationProjectBackend.Utility.ArticleReader;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
@@ -68,6 +69,11 @@ builder.Services.AddScoped<FakeWordCloudService>();
 builder.Services.AddScoped<FakeSentimentAnalysisService>();
 builder.Services.AddScoped<FakePopularityAnalysisService>();
 
+var redis = ConnectionMultiplexer.Connect("redis:6379");
+IDatabase db = redis.GetDatabase();
+builder.Services.AddSingleton<ConnectionMultiplexer>(redis);
+
+
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -93,9 +99,6 @@ builder.Services.AddCors(policyBuilder =>
 );
 
 builder.Services.AddDateOnlyTimeOnlyStringConverters();
-
-LinQArticleHelper linQArticleHelperInstance = new LinQArticleHelper();
-await linQArticleHelperInstance.LoadArticle();
 
 builder.Services.AddTransient<LinQArticleHelper>();
 
