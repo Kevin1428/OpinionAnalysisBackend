@@ -60,8 +60,8 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                         .Must(m => m
                                 .Bool(bb => bb
                                     .Should(
-                                        sh => sh.Match(ma => ma.Field("articleTitle").Query(topic).MinimumShouldMatch("100%")),
-                                        sh => sh.Match(ma => ma.Field("content").Query(topic).MinimumShouldMatch("100%"))
+                                        sh => sh.Match(ma => ma.Field("articleTitle").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleTiTleMinimumShouldMatch)),
+                                        sh => sh.Match(ma => ma.Field("content").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleContentMinimumShouldMatch))
                                         ).MinimumShouldMatch(2)
                                 ),
                             m => m
