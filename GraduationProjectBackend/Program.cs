@@ -98,7 +98,7 @@ builder.Services.AddCors(policyBuilder =>
 
 builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
-builder.Services.AddTransient<LinQArticleHelper>();
+builder.Services.AddTransient<ArticleHelper>();
 
 var app = builder.Build();
 

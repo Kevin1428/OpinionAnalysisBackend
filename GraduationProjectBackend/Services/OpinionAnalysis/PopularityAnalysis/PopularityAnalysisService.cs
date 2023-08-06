@@ -13,12 +13,12 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
     public class PopularityAnalysisService : IPopularityAnalysisService
     {
 
-        private LinQArticleHelper LinQArticleHelper;
+        private readonly ArticleHelper _articleHelper;
         private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
 
-        public PopularityAnalysisService(LinQArticleHelper linQArticleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
+        public PopularityAnalysisService(ArticleHelper articleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
         {
-            LinQArticleHelper = linQArticleHelper;
+            _articleHelper = articleHelper;
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
@@ -26,7 +26,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
             DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
 
-            var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {

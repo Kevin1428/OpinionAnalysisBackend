@@ -9,19 +9,19 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
     public class WordCloudService : IWordCloudService
     {
 
-        private LinQArticleHelper LinQArticleHelper;
+        private readonly ArticleHelper _articleHelper;
         private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
 
 
-        public WordCloudService(LinQArticleHelper linQArticleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
+        public WordCloudService(ArticleHelper articleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
         {
-            LinQArticleHelper = linQArticleHelper;
+            _articleHelper = articleHelper;
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
         public async Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
-            var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
             bool ContentFilter(Article a) => true;
             bool ArticleTitleFilter(Article a) => true;
@@ -31,7 +31,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
         }
         public async Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
-            var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
             bool ContentFilter(Article a) => a.ArticleTitleSentiment.Contains("positive");
             bool ArticleTitleFilter(Article a) => a.ContentSentiment.Contains("positive");
             bool MessagesContentFilter(Message a) => a.PushContentSentiment!.Contains("positive");
@@ -41,7 +41,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
         }
         public async Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
-            var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
             bool ContentFilter(Article a) => a.ArticleTitleSentiment.Contains("negative");
             bool ArticleTitleFilter(Article a) => a.ContentSentiment.Contains("negative");

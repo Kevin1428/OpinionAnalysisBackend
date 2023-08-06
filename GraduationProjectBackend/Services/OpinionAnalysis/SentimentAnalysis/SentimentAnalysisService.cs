@@ -12,18 +12,18 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
     public class SentimentAnalysisService : ISentimentAnalysisService
     {
-        private LinQArticleHelper linQArticleHelper;
+        private readonly ArticleHelper _articleHelper;
         private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
-        public SentimentAnalysisService(LinQArticleHelper linQArticleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
+        public SentimentAnalysisService(ArticleHelper articleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
         {
-            linQArticleHelper = linQArticleHelper;
+            _articleHelper = articleHelper;
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
         public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate,
             DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
-            var article = await linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
