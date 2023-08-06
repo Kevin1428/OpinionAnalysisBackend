@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
 {
@@ -44,11 +45,26 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("url")]
         public string? Url { get; set; }
 
+        [JsonProperty("_score")]
+        public int Score { get; set; }
+
         [JsonPropertyName("processed_content")]
         public IEnumerable<string> ProcessedContent { get; set; } = new List<string>();
 
+        [JsonPropertyName("processed_nb_content")]
+        public IEnumerable<string> ProcessedNbContent { get; set; } = new List<string>();
+
+        [JsonPropertyName("processed_adj_content")]
+        public IEnumerable<string> ProcessedAdjContent { get; set; } = new List<string>();
+
         [JsonPropertyName("processed_article_title")]
         public IEnumerable<string>? ProcessedArticleTitle { get; set; } = new List<string>();
+
+        [JsonPropertyName("processed_nb_article_title")]
+        public IEnumerable<string> ProcessedNbArticleTitle { get; set; } = new List<string>();
+
+        [JsonPropertyName("processed_adj_article_title")]
+        public IEnumerable<string>? ProcessedAdjArticleTitle { get; set; } = new List<string>();
 
         [JsonPropertyName("content_sentiment")]
         public string ContentSentiment { get; set; } = "";
@@ -61,7 +77,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
             return new ArticleUserView(
                 ArticleTitle: ArticleTitle,
                 ArticleDate: SearchDate,
-                //ArticleContent: Content,
+                ArticleContent: Content,
                 Url: Url,
                 MessageCount: MessageCount!.All,
                 SentimentCount: sentiment_count);
@@ -92,6 +108,12 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public string? PushUserId { get; set; }
         [JsonPropertyName("processed_push_content")]
         public IEnumerable<string>? ProcessedPushContent { get; set; } = new List<string>();
+
+        [JsonPropertyName("processed_nb_push_content")]
+        public IEnumerable<string>? ProcessedNbPushContent { get; set; } = new List<string>();
+
+        [JsonPropertyName("processed_adj_push_content")]
+        public IEnumerable<string>? ProcessedAdjPushContent { get; set; } = new List<string>();
     }
 
     public class MessageCount
@@ -129,7 +151,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
     public record ArticleUserView(
         string? ArticleTitle,
         string ArticleDate,
-        //string ArticleContent,
+        string ArticleContent,
         string Url,
         int MessageCount,
         SentimentCount SentimentCount

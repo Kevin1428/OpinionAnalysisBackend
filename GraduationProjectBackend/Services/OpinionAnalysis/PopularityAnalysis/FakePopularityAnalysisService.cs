@@ -1,10 +1,12 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis;
+using GraduationProjectBackend.Enums;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
 {
     public class FakePopularityAnalysisService : IPopularityAnalysisService
     {
-        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> discussNumber = new List<int>();

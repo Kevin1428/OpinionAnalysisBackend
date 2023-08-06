@@ -1,6 +1,12 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis;
+﻿using GraduationProjectBackend.ConfigModel;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis;
+using GraduationProjectBackend.Enums;
+using GraduationProjectBackend.Helper.Redis;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
 {
@@ -8,13 +14,16 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
     {
 
         private LinQArticleHelper LinQArticleHelper;
+        private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
 
-        public PopularityAnalysisService(LinQArticleHelper linQArticleHelper)
+        public PopularityAnalysisService(LinQArticleHelper linQArticleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
         {
             LinQArticleHelper = linQArticleHelper;
+            _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
-        public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
 
             var article = await LinQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
@@ -33,12 +42,19 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
             var dateOfAnalysis = new List<DateOnly>();
             var discussNumber = new List<int>();
             var hotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
+            var redisHotArticleContents = new Dictionary<DateOnly, ICollection<string>>();
+
 
             while (leftDate < endDate)
             {
                 dateOfAnalysis.Add(leftDate);
 
-                hotArticles.TryAdd(leftDate, article.Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).OrderByDescending(o => o.MessageCount!.All).Select(o => o.ToAtricleUserView()).Take(1).ToList());
+                var currentDateHotArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate)
+                    .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
+
+                hotArticles.TryAdd(leftDate, currentDateHotArticles.Select(o => o.ToAtricleUserView()).ToList());
+                redisHotArticleContents.TryAdd(leftDate, currentDateHotArticles.Select(o => o.Content).ToList()!);
 
                 disCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.count);
 
@@ -48,6 +64,18 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                 rightDate = rightDate.AddDays(dayRange);
 
             }
+
+            var redisDatabase = RedisHelper.GetRedisDatabase();
+            var redisKey = RedisHelper.GetRedisKey(topic,
+                                                   startDate,
+                                                   endDate,
+                                                   dateRange,
+                                                   isExactMatch,
+                                                   searchMode);
+            await redisDatabase.HashSetAsync(redisKey, "Popularity", JsonSerializer.Serialize(redisHotArticleContents), When.NotExists);
+
+            var b = redisDatabase.HashGet(redisKey, "Popularity");
+            redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));
 
             return new PopularityAnalysisResponse(DiscussNumber: discussNumber,
                                                   Dates: dateOfAnalysis,

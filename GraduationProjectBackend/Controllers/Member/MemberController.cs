@@ -111,8 +111,6 @@ namespace GraduationProjectBackend.Controllers.Member
         /// <summary>
         /// 登入
         /// </summary>
-        /// <param name="account"></param>
-        /// <param name="password"></param>
         /// <remarks>
         /// 測試用帳號:
         /// user1

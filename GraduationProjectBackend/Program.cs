@@ -1,3 +1,4 @@
+using GraduationProjectBackend.ConfigModel;
 using GraduationProjectBackend.DataAccess.Context;
 using GraduationProjectBackend.DataAccess.Repositories.Favorite;
 using GraduationProjectBackend.DataAccess.Repositories.Member;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
@@ -69,9 +69,7 @@ builder.Services.AddScoped<FakeWordCloudService>();
 builder.Services.AddScoped<FakeSentimentAnalysisService>();
 builder.Services.AddScoped<FakePopularityAnalysisService>();
 
-var redis = ConnectionMultiplexer.Connect("redis:6379");
-IDatabase db = redis.GetDatabase();
-builder.Services.AddSingleton<ConnectionMultiplexer>(redis);
+builder.Services.Configure<OpinionAnalysisConfig>(builder.Configuration.GetSection("OpinionAnalysis"));
 
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();

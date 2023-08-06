@@ -1,5 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.Context;
-using GraduationProjectBackend.DataAccess.DTOs;
+using GraduationProjectBackend.DataAccess.DTOs.FavoriteFolder;
 using GraduationProjectBackend.DataAccess.Models.Favorite;
 using GraduationProjectBackend.DataAccess.Repositories.Favorite;
 using GraduationProjectBackend.Helper.Member;

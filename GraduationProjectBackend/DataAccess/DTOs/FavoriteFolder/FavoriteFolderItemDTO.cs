@@ -1,7 +1,7 @@
 ﻿using GraduationProjectBackend.DataAccess.Models.Favorite;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GraduationProjectBackend.DataAccess.DTOs
+namespace GraduationProjectBackend.DataAccess.DTOs.FavoriteFolder
 {
     public class FavoriteFolderItemDTO
     {

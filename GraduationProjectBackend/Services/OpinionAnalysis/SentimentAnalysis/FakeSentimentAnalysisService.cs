@@ -1,10 +1,12 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
+using GraduationProjectBackend.Enums;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
     public class FakeSentimentAnalysisService : ISentimentAnalysisService
     {
-        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
             ICollection<DateOnly> dateOfAnalysis = new List<DateOnly>();
             ICollection<int> postiveNumber = new List<int>();
@@ -18,12 +20,12 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                 negtiveNumber.Add(randomDiscussNumber.Next(1, 10000));
             }
 
-            var PopularityAnalysisResponse = new SentimentAnalysisResponse(
+            var popularityAnalysisResponse = new SentimentAnalysisResponse(
                     PositiveNumber: postiveNumber,
                     NegativeNumber: negtiveNumber,
                     Dates: dateOfAnalysis
                 );
-            return Task.FromResult(PopularityAnalysisResponse);
+            return Task.FromResult(popularityAnalysisResponse);
         }
     }
 }

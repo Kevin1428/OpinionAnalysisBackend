@@ -1,5 +1,4 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis;
-using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
 using GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +9,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
     public class SentimentAnalysisController : ControllerBase
     {
         private readonly ISentimentAnalysisService _sentimentAnalysisService;
+
 
         public SentimentAnalysisController(ISentimentAnalysisService sentimentAnalysisService)
         {
@@ -28,9 +28,8 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             return Ok(await _sentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
                                                                                    route.StartDate,
                                                                                    route.EndDate,
-                                                                                   query.dateRange,
-                                                                                   query.isExactMatch
-                                                                                   ));
+                                                                                   query.DateRange,
+                                                                                   query.IsExactMatch, query.SearchMode));
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             return Ok(await fakeSentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
                                                                                       route.StartDate,
                                                                                       route.EndDate,
-                                                                                      query.dateRange, query.isExactMatch));
+                                                                                      query.DateRange, query.IsExactMatch, query.SearchMode));
         }
     }
 }

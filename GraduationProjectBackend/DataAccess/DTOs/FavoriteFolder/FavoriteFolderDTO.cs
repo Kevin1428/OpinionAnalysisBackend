@@ -1,4 +1,4 @@
-﻿namespace GraduationProjectBackend.DataAccess.DTOs
+﻿namespace GraduationProjectBackend.DataAccess.DTOs.FavoriteFolder
 {
     public class FavoriteFolderDTO
     {

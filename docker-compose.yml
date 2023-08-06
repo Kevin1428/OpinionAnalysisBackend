@@ -13,8 +13,6 @@ services:
     build:
       context: .
       dockerfile: GraduationProjectBackend/Dockerfile
-    volumes:
-    -  ./GraduationProjectBackend/Utility/ArticleReader/AtricleDates:/app/Utility/ArticleReader/AtricleDates
     ports:
     - "53622:443"
   mssql:
@@ -28,7 +26,7 @@ services:
       - "1433:1433"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+    image: kukina622/elasticsearch:8.8.1-traditional-chinese
     container_name: elasticsearch-623
     ports:
       - "9200:9200"

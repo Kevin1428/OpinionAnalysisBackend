@@ -1,19 +1,27 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
+﻿using GraduationProjectBackend.ConfigModel;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
+using GraduationProjectBackend.Enums;
+using GraduationProjectBackend.Helper.Redis;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
     public class SentimentAnalysisService : ISentimentAnalysisService
     {
         private LinQArticleHelper linQArticleHelper;
-
-        public SentimentAnalysisService(LinQArticleHelper linQArticleHelper)
+        private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
+        public SentimentAnalysisService(LinQArticleHelper linQArticleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
         {
-            this.linQArticleHelper = linQArticleHelper;
+            linQArticleHelper = linQArticleHelper;
+            _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
-        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
         {
             var article = await linQArticleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
@@ -35,7 +43,10 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
             var negtiveNumber = new List<int>();
 
             var posHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
+            var posRedisHotArticles = new Dictionary<DateOnly, ICollection<string>>();
+
             var negHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
+            var negRedisHotArticles = new Dictionary<DateOnly, ICollection<string>>();
 
             while (leftDate < endDate)
             {
@@ -43,17 +54,44 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
                 posCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Positive);
                 postiveNumber.Add(posCount);
-                posHotArticles.TryAdd(leftDate, article.Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).OrderByDescending(o => o.sentiment_count!.Positive).Select(o => o.ToAtricleUserView()).Take(1).ToList());
 
+                var currentPosHotArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative)
+                    .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
+                    .ToList();
+
+                posHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.ToAtricleUserView()).ToList());
+                posRedisHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.Content).ToList()!);
 
                 negCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Negative);
                 negtiveNumber.Add(negCount);
-                negHotArticles.TryAdd(leftDate, article.Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).OrderByDescending(o => o.sentiment_count!.Negative).Select(o => o.ToAtricleUserView()).Take(1).ToList());
+
+                var currentNegHotArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
+                    .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
+                    .ToList();
+
+                negHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.ToAtricleUserView()).ToList());
+                negRedisHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.Content).ToList()!);
 
 
                 leftDate = rightDate;
                 rightDate = rightDate.AddDays(dayRange);
             }
+
+
+            var redisDatabase = RedisHelper.GetRedisDatabase();
+            var redisKey = RedisHelper.GetRedisKey(topic,
+                startDate,
+                endDate,
+                dateRange,
+                isExactMatch,
+                searchMode);
+
+            await redisDatabase.HashSetAsync(redisKey, "Positive", JsonSerializer.Serialize(posRedisHotArticles), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "Negative", JsonSerializer.Serialize(negRedisHotArticles), When.NotExists);
+
+            redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));
 
             var sentimentAnalysisResponse = new SentimentAnalysisResponse(
                     PositiveNumber: postiveNumber,

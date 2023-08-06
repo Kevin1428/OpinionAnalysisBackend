@@ -1,4 +1,6 @@
-﻿namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis
+﻿using GraduationProjectBackend.Enums;
+
+namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis
 {
     public class OpinionAnalysisRequest
     {
@@ -28,11 +30,20 @@
             /// 分析日期的區間大小
             /// </summary>
             /// <example>30</example>
-            public int dateRange { get; set; }
+            public int DateRange { get; set; } = 30;
+
             /// <summary>
-            /// 是不是要完全匹配到的資料才搜尋 預設false
+            /// 是不是要完全 Match 到的資料才分析
             /// </summary>
-            public bool? isExactMatch { get; set; }
+            public bool IsExactMatch { get; set; } = false;
+
+            /// <summary>
+            /// 對(標題,內文)搜索 或是 (標題,內文)(留言) 分別搜尋
+            /// </summary>
+            public SearchModeEnum SearchMode { get; set; } = SearchModeEnum.Normal;
         }
+
+
     }
+
 }

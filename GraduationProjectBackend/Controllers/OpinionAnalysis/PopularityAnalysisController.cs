@@ -28,8 +28,8 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 route.Topic,
                 route.StartDate,
                 route.EndDate,
-                query.dateRange,
-                query.isExactMatch));
+                query.DateRange,
+                query.IsExactMatch, query.SearchMode));
         }
 
         /// <summary>
@@ -44,8 +44,9 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 route.Topic,
                 route.StartDate,
                 route.EndDate,
-                query.dateRange,
-                query.isExactMatch));
+                query.DateRange,
+                query.IsExactMatch,
+                query.SearchMode));
         }
     }
 }
