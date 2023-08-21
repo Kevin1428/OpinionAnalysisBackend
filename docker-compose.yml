@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: GraduationProjectBackend/Dockerfile
     ports:
-    - "53622:443"
+        - "53622:443"
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
@@ -68,6 +68,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    command: '--requirepass !nWB!V2!yjTum'
 
   redisinsight:
     image: redislabs/redisinsight:latest

@@ -1,6 +1,6 @@
 ﻿namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs
 {
-    public class WordCloudResponse
+    public class WordCloudAnalysisResult
     {
 
         public ICollection<string> WordSegment { get; set; }
@@ -11,7 +11,7 @@
         public ICollection<int> WordSegmentAdjFrequency { get; set; }
 
 
-        public WordCloudResponse(ICollection<string> wordSegment, ICollection<int> wordSegmentFrequency, ICollection<string> wordSegmentNb, ICollection<int> wordSegmentNbFrequency, ICollection<string> wordSegmentAdj, ICollection<int> wordSegmentAdjFrequency)
+        public WordCloudAnalysisResult(ICollection<string> wordSegment, ICollection<int> wordSegmentFrequency, ICollection<string> wordSegmentNb, ICollection<int> wordSegmentNbFrequency, ICollection<string> wordSegmentAdj, ICollection<int> wordSegmentAdjFrequency)
         {
             WordSegment = wordSegment;
             WordSegmentFrequency = wordSegmentFrequency;

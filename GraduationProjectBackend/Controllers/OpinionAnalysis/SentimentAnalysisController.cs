@@ -31,21 +31,5 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                                                                                    query.DateRange,
                                                                                    query.IsExactMatch, query.SearchMode));
         }
-
-        /// <summary>
-        /// 假資料正負向分析
-        /// </summary>
-        /// <param name="route"></param>
-        /// <param name="fakeSentimentAnalysisService"></param>
-        /// <returns></returns>
-        [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-
-        public async Task<ActionResult> FakeSentimentAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query, [FromServices] FakeSentimentAnalysisService fakeSentimentAnalysisService)
-        {
-            return Ok(await fakeSentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
-                                                                                      route.StartDate,
-                                                                                      route.EndDate,
-                                                                                      query.DateRange, query.IsExactMatch, query.SearchMode));
-        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using GraduationProjectBackend.ConfigModel;
 using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
 using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Helper.Redis;
+using GraduationProjectBackend.Services.OpinionAnalysis.WordCloud;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 using Microsoft.Extensions.Options;
@@ -10,11 +12,12 @@ using System.Text.Json;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 {
-    public class SentimentAnalysisService : ISentimentAnalysisService
+    public class SentimentAnalysisService : ServiceBase, ISentimentAnalysisService
     {
         private readonly ArticleHelper _articleHelper;
         private readonly OpinionAnalysisConfig _opinionAnalysisConfig;
-        public SentimentAnalysisService(ArticleHelper articleHelper, IOptions<OpinionAnalysisConfig> opinionAnalysisConfig)
+        public SentimentAnalysisService(ArticleHelper articleHelper,
+            IOptions<OpinionAnalysisConfig> opinionAnalysisConfig, IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _articleHelper = articleHelper;
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
@@ -36,7 +39,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
             var dayRange = dateRange;
             var posCount = 0;
             var negCount = 0;
-            var leftDate = startDate;
+            var leftDate = startDate.AddDays(dayRange);
             var rightDate = leftDate.AddDays(dayRange);
             var dateOfAnalysis = new List<DateOnly>();
             var postiveNumber = new List<int>();
@@ -48,9 +51,15 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
             var negHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
             var negRedisHotArticles = new Dictionary<DateOnly, ICollection<string>>();
 
+            var wordAnalysisResults = new List<WordCloudAnalysisResult>();
+            var wordCloudService = ServiceProvider.GetRequiredService<IWordCloudService>();
+
+
             while (leftDate < endDate)
             {
                 dateOfAnalysis.Add(leftDate);
+
+                #region 正向統計
 
                 posCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Positive);
                 postiveNumber.Add(posCount);
@@ -63,6 +72,8 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                 posHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 posRedisHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.Content).ToList()!);
 
+                #endregion
+                #region 負向統計
                 negCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Negative);
                 negtiveNumber.Add(negCount);
 
@@ -73,7 +84,14 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
                 negHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 negRedisHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.Content).ToList()!);
-
+                #endregion
+                #region 斷詞統計
+                wordAnalysisResults.Add(await wordCloudService.GetWordCloudResponse(
+                    article.Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).ToList(),
+                    (a) => true,
+                    (a) => true,
+                    (a) => true));
+                #endregion
 
                 leftDate = rightDate;
                 rightDate = rightDate.AddDays(dayRange);
@@ -98,7 +116,8 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     NegativeNumber: negtiveNumber,
                     Dates: dateOfAnalysis,
                     NegHotArticle: negHotArticles,
-                    PosHotArticle: posHotArticles
+                    PosHotArticle: posHotArticles,
+                    WordCloudAnalysisResults: wordAnalysisResults
                 );
             return sentimentAnalysisResponse;
         }

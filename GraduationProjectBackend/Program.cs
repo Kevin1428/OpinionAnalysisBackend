@@ -65,10 +65,6 @@ builder.Services.AddScoped<IWordCloudService, WordCloudService>();
 builder.Services.AddScoped<IPopularityAnalysisService, PopularityAnalysisService>();
 builder.Services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
 
-builder.Services.AddScoped<FakeWordCloudService>();
-builder.Services.AddScoped<FakeSentimentAnalysisService>();
-builder.Services.AddScoped<FakePopularityAnalysisService>();
-
 builder.Services.Configure<OpinionAnalysisConfig>(builder.Configuration.GetSection("OpinionAnalysis"));
 
 

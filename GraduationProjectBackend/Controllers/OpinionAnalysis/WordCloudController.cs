@@ -95,24 +95,5 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
             }
         }
 
-        /// <summary>
-        /// 假資料文字雲
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-        public async Task<ActionResult> FakeTopicContentSegment([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query, [FromServices] FakeWordCloudService fakeWordCloudService)
-        {
-            try
-            {
-                var wordCloudResponseDTO = await fakeWordCloudService.GetFullWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch);
-
-
-                return Ok(wordCloudResponseDTO);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

@@ -32,21 +32,5 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 query.IsExactMatch, query.SearchMode));
         }
 
-        /// <summary>
-        /// 假資料熱度分析
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("fake/{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
-        //[Authorize]
-        public async Task<ActionResult> FakePopularityAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query, [FromServices] FakePopularityAnalysisService fakePopularityAnalysisService)
-        {
-            return Ok(await fakePopularityAnalysisService.GetPopularityAnalysisResponse(
-                route.Topic,
-                route.StartDate,
-                route.EndDate,
-                query.DateRange,
-                query.IsExactMatch,
-                query.SearchMode));
-        }
     }
 }

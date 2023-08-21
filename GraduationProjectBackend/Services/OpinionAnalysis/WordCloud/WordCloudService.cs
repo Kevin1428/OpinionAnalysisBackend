@@ -19,7 +19,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
-        public async Task<WordCloudResponse> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
@@ -29,7 +29,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
 
             return await GetWordCloudResponse(article, ContentFilter, ArticleTitleFilter, MessagesContentFilter);
         }
-        public async Task<WordCloudResponse> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
             bool ContentFilter(Article a) => a.ArticleTitleSentiment.Contains("positive");
@@ -39,7 +39,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             return await GetWordCloudResponse(article, ContentFilter, ArticleTitleFilter, MessagesContentFilter);
 
         }
-        public async Task<WordCloudResponse> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
         {
             var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
 
@@ -50,7 +50,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             return await GetWordCloudResponse(article, ContentFilter, ArticleTitleFilter, MessagesContentFilter);
 
         }
-        private async Task<WordCloudResponse> GetWordCloudResponse(List<Article> article,
+        public async Task<WordCloudAnalysisResult> GetWordCloudResponse(List<Article> article,
     Func<Article, bool> contentFilter, Func<Article, bool> articleTitleFilter, Func<Message, bool> messagesContentFilter)
         {
             var nbWords = new List<string>();
@@ -89,7 +89,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             var adjFrequency = adjDic.Select(pair => pair.Value).ToList();
 
 
-            return await Task.FromResult(new WordCloudResponse(wordSegment, frequency, nbWordSegment, nbFrequency,
+            return await Task.FromResult(new WordCloudAnalysisResult(wordSegment, frequency, nbWordSegment, nbFrequency,
                 adjWordSegment, adjFrequency));
         }
 
