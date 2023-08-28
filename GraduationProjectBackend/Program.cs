@@ -4,6 +4,7 @@ using GraduationProjectBackend.DataAccess.Repositories.Favorite;
 using GraduationProjectBackend.DataAccess.Repositories.Member;
 using GraduationProjectBackend.Filter.Swagger;
 using GraduationProjectBackend.Helper.Member;
+using GraduationProjectBackend.Querys;
 using GraduationProjectBackend.Services.Favorite;
 using GraduationProjectBackend.Services.Member;
 using GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis;
@@ -65,8 +66,10 @@ builder.Services.AddScoped<IWordCloudService, WordCloudService>();
 builder.Services.AddScoped<IPopularityAnalysisService, PopularityAnalysisService>();
 builder.Services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
 
+
 builder.Services.Configure<OpinionAnalysisConfig>(builder.Configuration.GetSection("OpinionAnalysis"));
 
+builder.Services.AddScoped<ITrendingTopicQuery, TrendingTopicQuery>();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

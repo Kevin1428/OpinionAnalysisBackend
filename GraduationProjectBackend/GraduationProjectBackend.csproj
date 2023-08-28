@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\TrendingTopic\" />
     <Folder Include="DataAccess\Migrations\" />
     <Folder Include="Helper\OpinionAnalysis\" />
   </ItemGroup>

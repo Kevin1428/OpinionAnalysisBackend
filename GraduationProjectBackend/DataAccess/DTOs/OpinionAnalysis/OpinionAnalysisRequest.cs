@@ -43,7 +43,6 @@ namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis
             public SearchModeEnum SearchMode { get; set; } = SearchModeEnum.Normal;
         }
 
-
     }
 
 }

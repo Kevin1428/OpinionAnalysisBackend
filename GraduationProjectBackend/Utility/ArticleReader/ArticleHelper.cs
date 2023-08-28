@@ -42,10 +42,11 @@ namespace GraduationProjectBackend.Utility.ArticleReader
         }
         private async Task<List<Article>> GetElsDataAsync(string topic, DateOnly startDate, DateOnly endDate, bool? isExactMatch)
         {
-            var searchResult = new List<Article>();
             var node = new Uri("http://elasticsearch:9200");
             var settings = new ConnectionSettings(node).EnableApiVersioningHeader();
             var client = new ElasticClient(settings);
+
+            var searchResult = new List<Article>();
             var hits = new List<IHit<Article>>();
 
             var indexName = "articles";
