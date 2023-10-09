@@ -1,4 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.SentimentAnalysis;
 using GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> SentimentAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
+        public async Task<ActionResult<SentimentAnalysisResponse>> SentimentAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             return Ok(await _sentimentAnalysisService.GetSentimentAnalysisResponse(route.Topic,
                                                                                    route.StartDate,

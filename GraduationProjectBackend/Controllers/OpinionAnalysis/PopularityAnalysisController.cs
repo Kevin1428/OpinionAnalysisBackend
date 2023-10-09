@@ -1,4 +1,5 @@
 ﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis;
+using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis;
 using GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
 
         [HttpGet("{Topic}/StatrDate/{StartDate}/EndDate/{EndDate}")]
         //[Authorize]
-        public async Task<ActionResult> PopularityAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
+        public async Task<ActionResult<PopularityAnalysisResponse>> PopularityAnalysis([FromRoute] OpinionAnalysisRequest.Route route, [FromQuery] OpinionAnalysisRequest.Query query)
         {
             return Ok(await _popularityAnalysisService.GetPopularityAnalysisResponse(
                 route.Topic,
