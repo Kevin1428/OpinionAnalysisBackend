@@ -72,7 +72,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     .ToList();
 
                 var currentPosHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative && g.ArticleTitle.Contains("新聞"))
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
                     .ToList();
 
@@ -90,7 +90,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
                     .ToList();
                 var currentNegHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
                     .ToList();
 
