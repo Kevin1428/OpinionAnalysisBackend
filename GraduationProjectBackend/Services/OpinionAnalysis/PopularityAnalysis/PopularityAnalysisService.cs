@@ -45,6 +45,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
             var discussNumber = new List<int>();
             var hotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
             var redisHotArticleContents = new Dictionary<DateOnly, ICollection<string>>();
+            var redisHotArticleNewsContents = new Dictionary<DateOnly, ICollection<string>>();
 
             var wordAnalysisResults = new List<WordCloudAnalysisResult>();
             var wordCloudService = ServiceProvider.GetRequiredService<IWordCloudService>();
@@ -57,8 +58,13 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                     .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate)
                     .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
 
+                var currentDateHotNewsArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.ArticleTitle.Contains("新聞"))
+                    .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
+
                 hotArticles.TryAdd(leftDate, currentDateHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 redisHotArticleContents.TryAdd(leftDate, currentDateHotArticles.Select(o => o.Content).ToList()!);
+                redisHotArticleNewsContents.TryAdd(leftDate, currentDateHotNewsArticles.Select(o => o.Content).ToList()!);
 
                 disCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.count);
 
@@ -82,7 +88,9 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                                                    dateRange,
                                                    isExactMatch,
                                                    searchMode);
+
             await redisDatabase.HashSetAsync(redisKey, "Popularity", JsonSerializer.Serialize(redisHotArticleContents), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "PopularityNews", JsonSerializer.Serialize(redisHotArticleNewsContents), When.NotExists);
 
             var b = redisDatabase.HashGet(redisKey, "Popularity");
             redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));

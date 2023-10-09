@@ -84,7 +84,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             searchResult.AddRange(hits.Select(o => o.Source));
             var removeList = _opinionAnalysisConfig.RemoveTagWord;
 
-            return searchResult.Where(a => !removeList.Any(o => a.ArticleTitle!.Contains(o))).OrderBy(article => DateOnly.Parse(article.SearchDate)).ToList();
+            return searchResult.OrderBy(article => DateOnly.Parse(article.SearchDate)).ToList();
         }
     }
 }

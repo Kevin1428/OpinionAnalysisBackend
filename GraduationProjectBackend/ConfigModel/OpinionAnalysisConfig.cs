@@ -10,5 +10,9 @@
         public int ElasticScrollSize { get; set; }
         public int RedisExpireSecond { get; set; }
         public ICollection<string>? RemoveTagWord { get; set; }
+
+        public int WordSegmentWordLength { get; set; }
+        public int WordAdjSegmentWordLength { get; set; }
+        public int WordNbSegmentWordLength { get; set; }
     }
 }

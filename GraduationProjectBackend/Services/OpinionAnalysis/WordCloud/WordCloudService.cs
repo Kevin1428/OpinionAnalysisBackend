@@ -63,7 +63,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             words.AddRange(article.SelectMany(A =>
                 A.Messages.Where(messagesContentFilter).SelectMany(M => M.ProcessedPushContent!)));
 
-            var dic = words.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
+            var dic = words.Where(o => o.Length > _opinionAnalysisConfig.WordSegmentWordLength).GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
                 .OrderByDescending(D => D.Value).Take(takeHowMany);
             var wordSegment = dic.Select(pair => pair.Key).ToList();
             var frequency = dic.Select(pair => pair.Value).ToList();
@@ -73,7 +73,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             nbWords.AddRange(article.SelectMany(A =>
                 A.Messages.Where(messagesContentFilter).SelectMany(M => M.ProcessedNbPushContent!)));
 
-            var nbDic = nbWords.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
+            var nbDic = nbWords.Where(o => o.Length > _opinionAnalysisConfig.WordNbSegmentWordLength).GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
                 .OrderByDescending(D => D.Value).Take(takeHowMany);
             var nbWordSegment = nbDic.Select(pair => pair.Key).ToList();
             var nbFrequency = nbDic.Select(pair => pair.Value).ToList();
@@ -83,7 +83,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             adjWords.AddRange(article.SelectMany(A =>
                 A.Messages.Where(messagesContentFilter).SelectMany(M => M.ProcessedAdjPushContent!)));
 
-            var adjDic = adjWords.GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
+            var adjDic = adjWords.Where(o => o.Length > _opinionAnalysisConfig.WordAdjSegmentWordLength).GroupBy(word => word).ToDictionary(group => group.Key, group => group.Count())
                 .OrderByDescending(D => D.Value).Take(takeHowMany);
             var adjWordSegment = adjDic.Select(pair => pair.Key).ToList();
             var adjFrequency = adjDic.Select(pair => pair.Value).ToList();

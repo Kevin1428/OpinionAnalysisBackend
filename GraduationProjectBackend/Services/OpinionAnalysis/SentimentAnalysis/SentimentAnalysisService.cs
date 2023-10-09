@@ -47,9 +47,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
             var posHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
             var posRedisHotArticles = new Dictionary<DateOnly, ICollection<string>>();
+            var posRedisHotNewsArticles = new Dictionary<DateOnly, ICollection<string>>();
 
             var negHotArticles = new Dictionary<DateOnly, ICollection<ArticleUserView>>();
             var negRedisHotArticles = new Dictionary<DateOnly, ICollection<string>>();
+            var negRedisHotNewsArticles = new Dictionary<DateOnly, ICollection<string>>();
 
             var wordAnalysisResults = new List<WordCloudAnalysisResult>();
             var wordCloudService = ServiceProvider.GetRequiredService<IWordCloudService>();
@@ -69,8 +71,14 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
                     .ToList();
 
+                var currentPosHotNewsArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative && g.ArticleTitle.Contains("新聞"))
+                    .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
+                    .ToList();
+
                 posHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 posRedisHotArticles.TryAdd(leftDate, currentPosHotArticles.Select(o => o.Content).ToList()!);
+                posRedisHotNewsArticles.TryAdd(leftDate, currentPosHotNewsArticles.Select(o => o.Content).ToList()!);
 
                 #endregion
                 #region 負向統計
@@ -81,9 +89,15 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
                     .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
                     .ToList();
+                var currentNegHotNewsArticles = article
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
+                    .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
+                    .ToList();
 
                 negHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 negRedisHotArticles.TryAdd(leftDate, currentNegHotArticles.Select(o => o.Content).ToList()!);
+                negRedisHotNewsArticles.TryAdd(leftDate, currentNegHotNewsArticles.Select(o => o.Content).ToList()!);
+
                 #endregion
                 #region 斷詞統計
                 wordAnalysisResults.Add(await wordCloudService.GetWordCloudResponse(
@@ -108,6 +122,8 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
             await redisDatabase.HashSetAsync(redisKey, "Positive", JsonSerializer.Serialize(posRedisHotArticles), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "Negative", JsonSerializer.Serialize(negRedisHotArticles), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "PositiveNews", JsonSerializer.Serialize(posRedisHotNewsArticles), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "NegativeNews", JsonSerializer.Serialize(negRedisHotNewsArticles), When.NotExists);
 
             redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));
 
