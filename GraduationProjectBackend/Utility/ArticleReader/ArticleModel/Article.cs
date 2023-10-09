@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Mapster;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
@@ -80,7 +81,10 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
                 ArticleContent: Content,
                 Url: Url,
                 MessageCount: MessageCount!.All,
-                SentimentCount: sentiment_count);
+                SentimentCount: sentiment_count!,
+                ContentSentiment: ContentSentiment,
+                PushContents: Messages.Select(o => o.Adapt<MwssageUserView>())!
+                );
         }
     }
 
@@ -153,10 +157,14 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         string ArticleDate,
         string ArticleContent,
         string Url,
+        string ContentSentiment,
         int MessageCount,
-        SentimentCount SentimentCount
-        );
+        SentimentCount SentimentCount,
+        IEnumerable<MwssageUserView> PushContents);
 
+    public record MwssageUserView(
+        string? PushContent,
+        string? PushContentSentiment);
 
 }
 
