@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWTÈÑÊöï`èq"
+        Description = "JWT??ï`èq"
     });
 
     options.OperationFilter<AuthorizeCheckOperationFilter>();
