@@ -54,26 +54,54 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             var scrollTimeout = "1m"; // 設定 scroll 的逾時時間
             var scrollSize = _opinionAnalysisConfig.ElasticScrollSize; // 每次 scroll 擷取的文件數量
 
-            var searchResponse = await client.SearchAsync<Article>(s => s
-                .Index(indexName)
-                .Query(q => q
-                    .Bool(b => b
-                        .Must(m => m
-                                .Bool(bb => bb
-                                    .Should(
-                                        sh => sh.Match(ma => ma.Field("articleTitle").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleTiTleMinimumShouldMatch)),
-                                        sh => sh.Match(ma => ma.Field("content").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleContentMinimumShouldMatch))
-                                        ).MinimumShouldMatch(2)
-                                ),
-                            m => m
-                                .DateRange(r => r
-                                    .Field("searchDate")
-                                    .GreaterThanOrEquals(startDate.ToString("yyyy/MM/dd"))
-                                    .LessThanOrEquals(endDate.ToString("yyyy/MM/dd"))
-                                )
+            ISearchResponse<Article> searchResponse;
+
+            if (isExactMatch.HasValue && !isExactMatch.Value)
+            {
+                searchResponse = await client.SearchAsync<Article>(s => s
+                    .Index(indexName)
+                    .Query(q => q
+                        .Bool(b => b
+                            .Must(m => m
+                                    .Bool(bb => bb
+                                        .Should(
+                                            sh => sh.Match(ma => ma.Field("articleTitle").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleTiTleMinimumShouldMatch)),
+                                            sh => sh.Match(ma => ma.Field("content").Query(topic).MinimumShouldMatch(_opinionAnalysisConfig.ElasticSearchArticleContentMinimumShouldMatch))
+                                            ).MinimumShouldMatch(2)
+                                    ),
+                                m => m
+                                    .DateRange(r => r
+                                        .Field("searchDate")
+                                        .GreaterThanOrEquals(startDate.ToString("yyyy/MM/dd"))
+                                        .LessThanOrEquals(endDate.ToString("yyyy/MM/dd"))
+                                    )
+                            )
                         )
-                    )
-                ).Size(scrollSize).Scroll(scrollTimeout));
+                    ).Size(scrollSize).Scroll(scrollTimeout));
+            }
+            else
+            {
+                searchResponse = await client.SearchAsync<Article>(s => s
+                   .Index(indexName)
+                   .Query(q => q
+                       .Bool(b => b
+                           .Must(m => m
+                                   .Bool(bb => bb
+                                       .Should(
+                                           sh => sh.MatchPhrase(ma => ma.Field("articleTitle").Query(topic)),
+                                           sh => sh.MatchPhrase(ma => ma.Field("content").Query(topic))
+                                           ).MinimumShouldMatch(2)
+                                   ),
+                               m => m
+                                   .DateRange(r => r
+                                       .Field("searchDate")
+                                       .GreaterThanOrEquals(startDate.ToString("yyyy/MM/dd"))
+                                       .LessThanOrEquals(endDate.ToString("yyyy/MM/dd"))
+                                   )
+                           )
+                       )
+                   ).Size(scrollSize).Scroll(scrollTimeout));
+            }
 
             while (searchResponse.IsValid && !string.IsNullOrEmpty(searchResponse.ScrollId) && searchResponse.Documents.Any())
             {
