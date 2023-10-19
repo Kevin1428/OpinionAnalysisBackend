@@ -1,5 +1,6 @@
 ﻿using GraduationProjectBackend.ConfigModel;
 using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
+using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 using Microsoft.Extensions.Options;
@@ -19,9 +20,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
-        public async Task<WordCloudAnalysisResult> GetFullWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetFullWordCloudResponseDTO(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
-            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch, addressTypes);
 
             bool ContentFilter(Article a) => true;
             bool ArticleTitleFilter(Article a) => true;
@@ -29,9 +32,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
 
             return await GetWordCloudResponse(article, ContentFilter, ArticleTitleFilter, MessagesContentFilter);
         }
-        public async Task<WordCloudAnalysisResult> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetPositiveWordCloudResponseDTO(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
-            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch, addressTypes);
             bool ContentFilter(Article a) => a.ArticleTitleSentiment.Contains("positive");
             bool ArticleTitleFilter(Article a) => a.ContentSentiment.Contains("positive");
             bool MessagesContentFilter(Message a) => a.PushContentSentiment!.Contains("positive");
@@ -39,9 +44,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             return await GetWordCloudResponse(article, ContentFilter, ArticleTitleFilter, MessagesContentFilter);
 
         }
-        public async Task<WordCloudAnalysisResult> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<WordCloudAnalysisResult> GetNegativeWordCloudResponseDTO(string topic, DateOnly startDate,
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
-            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch, addressTypes);
 
             bool ContentFilter(Article a) => a.ArticleTitleSentiment.Contains("negative");
             bool ArticleTitleFilter(Article a) => a.ContentSentiment.Contains("negative");
@@ -88,9 +95,28 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
             var adjWordSegment = adjDic.Select(pair => pair.Key).ToList();
             var adjFrequency = adjDic.Select(pair => pair.Value).ToList();
 
+            var allWords = new List<string>();
+            allWords.AddRange(dic.Select(o => o.Key));
+            allWords.AddRange(adjDic.Select(o => o.Key));
+            allWords.AddRange(nbDic.Select(o => o.Key));
+
+            allWords = allWords.Distinct().ToList();
+
+            var relateArticles = new Dictionary<string, IEnumerable<ArticleUserView>>();
+
+            foreach (var word in allWords)
+            {
+                var wordArticles = article.Where(o => o.Content.Contains(word) || o.ArticleTitle.Contains(word) || o.Messages.Select(m => m.PushContent).Any(c => c.Contains(word)));
+
+                foreach (var a in wordArticles)
+                {
+                    a.Messages = a.Messages.Where(o => o.PushContent!.Contains(word)).ToList();
+                }
+                relateArticles.Add(word, wordArticles.Select(o => o.ToAtricleUserView()));
+            }
 
             return await Task.FromResult(new WordCloudAnalysisResult(wordSegment, frequency, nbWordSegment, nbFrequency,
-                adjWordSegment, adjFrequency));
+                adjWordSegment, adjFrequency, relateArticles));
         }
 
 

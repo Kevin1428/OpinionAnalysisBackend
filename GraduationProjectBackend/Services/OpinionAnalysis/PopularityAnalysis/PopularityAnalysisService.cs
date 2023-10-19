@@ -25,10 +25,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
         }
 
         public async Task<PopularityAnalysisResponse> GetPopularityAnalysisResponse(string topic, DateOnly startDate,
-            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
 
-            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch, addressTypes);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
@@ -36,6 +37,25 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                 count = g.Sum(A => A.MessageCount!.All)
             }).ToList();
 
+            var allAddress = Enum.GetValues(typeof(AddressType));
+            var addressDiscussNumber = new Dictionary<AddressType, int>();
+            var redisAddress = new List<AddressArticelRedis>();
+
+            foreach (AddressType value in allAddress)
+            {
+                var articleNumber = article.Count(o => o.AddressType == value);
+                var messageNumber = article.SelectMany(o => o.Messages).Count(o => o.AddressType == value);
+                addressDiscussNumber.Add(value, articleNumber + messageNumber);
+            }
+
+            var top3AddressTypes = addressDiscussNumber.OrderByDescending(o => o.Value).Take(3).Select(o => o.Key);
+            foreach (var value in top3AddressTypes)
+            {
+                var addressTopArticle = article.MaxBy(o =>
+                    (o.AddressType == value) ? 1 : 0 + (o.Messages?.Count(m => m.AddressType == value)));
+                if (addressTopArticle != null)
+                    redisAddress.Add(new AddressArticelRedis(value.ToString(), addressTopArticle.ArticleTitle, addressTopArticle.Content, addressTopArticle.ContentSentiment)!);
+            }
 
             var dayRange = dateRange;
             var disCount = 0;
@@ -87,19 +107,23 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                                                    endDate,
                                                    dateRange,
                                                    isExactMatch,
-                                                   searchMode);
+                                                   searchMode,
+                                                   addressTypes);
 
+            await redisDatabase.HashSetAsync(redisKey, "PopularityNumber", JsonSerializer.Serialize(discussNumber.Sum()), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "Popularity", JsonSerializer.Serialize(redisHotArticleContents), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "PopularityNews", JsonSerializer.Serialize(redisHotArticleNewsContents), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "AddressArticle",
+                JsonSerializer.Serialize(redisAddress), When.NotExists);
 
-            var b = redisDatabase.HashGet(redisKey, "Popularity");
             redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));
 
             return new PopularityAnalysisResponse(DiscussNumber: discussNumber,
                                                   Dates: dateOfAnalysis,
                                                   HotArticles: hotArticles,
-                                                  WordCloudAnalysisResults: wordAnalysisResults);
+                                                  AddressDiscussNumber: addressDiscussNumber);
         }
+        public new record AddressArticelRedis(string AddressName, string Title, string Content, string Sentiment);
 
     }
 }

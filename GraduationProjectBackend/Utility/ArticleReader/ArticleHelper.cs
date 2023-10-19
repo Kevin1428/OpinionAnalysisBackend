@@ -1,4 +1,5 @@
 ﻿using GraduationProjectBackend.ConfigModel;
+using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Helper.Redis;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,8 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             _opinionAnalysisConfig = opinionAnalysisConfig.Value;
         }
 
-        public async Task<List<Article>> GetArticlesInDateRange(string topic, DateOnly startDate, DateOnly endDate, int dateRange, bool? isExactMatch)
+        public async Task<List<Article>> GetArticlesInDateRange(string topic, DateOnly startDate, DateOnly endDate,
+            int dateRange, bool? isExactMatch, IEnumerable<AddressType>? addressTypes)
         {
             var redisDb = RedisHelper.GetRedisDatabase();
             var dataKey = topic + startDate.ToString() + endDate.ToString() + dateRange.ToString() + isExactMatch?.ToString();
@@ -25,7 +27,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader
 
             if (articlesCache.IsNull || true)
             {
-                var articles = await GetElsDataAsync(topic, startDate, endDate, isExactMatch);
+                var articles = await GetElsDataAsync(topic, startDate, endDate, isExactMatch, addressTypes);
                 //await redisDb.HashSetAsync(dataKey, new HashEntry[]
                 //{
                 //    new HashEntry("ElsData",JsonSerializer.Serialize(articles))
@@ -40,7 +42,8 @@ namespace GraduationProjectBackend.Utility.ArticleReader
                 return JsonSerializer.Deserialize<List<Article>>(articlesCache!)!;
             }
         }
-        private async Task<List<Article>> GetElsDataAsync(string topic, DateOnly startDate, DateOnly endDate, bool? isExactMatch)
+        private async Task<List<Article>> GetElsDataAsync(string topic, DateOnly startDate, DateOnly endDate,
+            bool? isExactMatch, IEnumerable<AddressType>? addressTypes)
         {
             var node = new Uri("http://elasticsearch:9200");
             var settings = new ConnectionSettings(node).EnableApiVersioningHeader();
@@ -111,6 +114,15 @@ namespace GraduationProjectBackend.Utility.ArticleReader
             hits = hits.OrderByDescending(o => o.Score).Take((int)Math.Floor(hits.Count() * _opinionAnalysisConfig.ElasticSearchScorePercentage)).ToList();
             searchResult.AddRange(hits.Select(o => o.Source));
             var removeList = _opinionAnalysisConfig.RemoveTagWord;
+
+            if (addressTypes is not null)
+            {
+                foreach (var article in searchResult)
+                {
+                    article.Messages = article.Messages.Where(o => addressTypes.Any(x => x == o.AddressType)).ToList();
+                }
+                searchResult = searchResult.Where(o => o.Messages.Count > 0 || addressTypes.Any(x => x == o.AddressType)).ToList();
+            }
 
             return searchResult.OrderBy(article => DateOnly.Parse(article.SearchDate)).ToList();
         }

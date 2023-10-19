@@ -1,4 +1,6 @@
-﻿namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs
+﻿using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
+
+namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs
 {
     public class WordCloudAnalysisResult
     {
@@ -10,8 +12,10 @@
         public ICollection<string> WordSegmentAdj { get; set; }
         public ICollection<int> WordSegmentAdjFrequency { get; set; }
 
+        public IDictionary<string, IEnumerable<ArticleUserView>> RelatedArticle { get; set; }
 
-        public WordCloudAnalysisResult(ICollection<string> wordSegment, ICollection<int> wordSegmentFrequency, ICollection<string> wordSegmentNb, ICollection<int> wordSegmentNbFrequency, ICollection<string> wordSegmentAdj, ICollection<int> wordSegmentAdjFrequency)
+
+        public WordCloudAnalysisResult(ICollection<string> wordSegment, ICollection<int> wordSegmentFrequency, ICollection<string> wordSegmentNb, ICollection<int> wordSegmentNbFrequency, ICollection<string> wordSegmentAdj, ICollection<int> wordSegmentAdjFrequency, IDictionary<string, IEnumerable<ArticleUserView>> relatedArticle)
         {
             WordSegment = wordSegment;
             WordSegmentFrequency = wordSegmentFrequency;
@@ -21,6 +25,7 @@
 
             WordSegmentAdj = wordSegmentAdj;
             WordSegmentAdjFrequency = wordSegmentAdjFrequency;
+            RelatedArticle = relatedArticle;
         }
 
     }

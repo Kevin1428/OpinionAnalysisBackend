@@ -9,6 +9,8 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
             DateOnly startDate,
             DateOnly endDate,
             int dateRange,
-            bool? isExactMatch, SearchModeEnum searchMode);
+            bool? isExactMatch,
+            SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes);
     }
 }

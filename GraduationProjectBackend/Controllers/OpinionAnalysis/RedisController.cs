@@ -12,7 +12,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         public async Task<ActionResult> PopularityAnalysis([FromRoute] OpinionAnalysisRequest.Route route,
             [FromQuery] OpinionAnalysisRequest.Query query)
         {
-            return Ok(RedisHelper.GetRedisKey(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch, query.SearchMode));
+            return Ok(RedisHelper.GetRedisKey(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch, query.SearchMode, query.AddressTypes));
         }
     }
 }

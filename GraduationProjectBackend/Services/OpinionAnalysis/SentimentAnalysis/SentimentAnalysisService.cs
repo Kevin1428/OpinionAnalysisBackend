@@ -24,9 +24,10 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
         }
 
         public async Task<SentimentAnalysisResponse> GetSentimentAnalysisResponse(string topic, DateOnly startDate,
-            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
-            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch);
+            var article = await _articleHelper.GetArticlesInDateRange(topic, startDate, endDate, dateRange, isExactMatch, addressTypes);
 
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
@@ -105,6 +106,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                     (a) => true,
                     (a) => true,
                     (a) => true));
+
+                foreach (var value in wordAnalysisResults)
+                {
+                    value.RelatedArticle = null;
+                }
                 #endregion
 
                 leftDate = rightDate;
@@ -118,12 +124,15 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                 endDate,
                 dateRange,
                 isExactMatch,
-                searchMode);
+                searchMode,
+                addressTypes);
 
             await redisDatabase.HashSetAsync(redisKey, "Positive", JsonSerializer.Serialize(posRedisHotArticles), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "Negative", JsonSerializer.Serialize(negRedisHotArticles), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "PositiveNews", JsonSerializer.Serialize(posRedisHotNewsArticles), When.NotExists);
             await redisDatabase.HashSetAsync(redisKey, "NegativeNews", JsonSerializer.Serialize(negRedisHotNewsArticles), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "PositiveNumber", JsonSerializer.Serialize(postiveNumber.Sum()), When.NotExists);
+            await redisDatabase.HashSetAsync(redisKey, "NegativeNumber", JsonSerializer.Serialize(negtiveNumber.Sum()), When.NotExists);
 
             redisDatabase.KeyExpire(redisKey, TimeSpan.FromSeconds(_opinionAnalysisConfig.RedisExpireSecond));
 

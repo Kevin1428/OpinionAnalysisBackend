@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
+using GraduationProjectBackend.Enums;
 
 namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
 {
@@ -73,6 +74,16 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         [JsonPropertyName("messages")]
         public List<Message> Messages { get; set; } = new List<Message>();
 
+        [JsonPropertyName("article_address")]
+        public string ArticleAddress { get; set; }
+
+        [JsonPropertyName("article_title_sentiment_score")]
+        public double ArticleTitleSentimentScore { get; set; }
+
+        [JsonPropertyName("content_sentiment_score")]
+        public double ContentSentimentScore { get; set; }
+        public AddressType? AddressType { get; set; }
+
         public ArticleUserView ToAtricleUserView()
         {
             return new ArticleUserView(
@@ -83,7 +94,11 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
                 MessageCount: MessageCount!.All,
                 SentimentCount: sentiment_count!,
                 ContentSentiment: ContentSentiment,
-                PushContents: Messages.Select(o => o.Adapt<MwssageUserView>())!
+                PushContents: Messages.Select(o => o.Adapt<MwssageUserView>()).OrderByDescending(o => o.PushContentSentimentScore)!,
+                AddressType: AddressType,
+                ArticleTitleSentimentScore: ArticleTitleSentimentScore,
+                ContentSentimentScore: ContentSentimentScore,
+                Address: ArticleAddress
                 );
         }
     }
@@ -118,6 +133,15 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
 
         [JsonPropertyName("processed_adj_push_content")]
         public IEnumerable<string>? ProcessedAdjPushContent { get; set; } = new List<string>();
+
+        [JsonPropertyName("address")]
+        public string Address { get; set; }
+        [JsonPropertyName("push_content_sentiment_score")]
+        public double PushContentSentimentScore { get; set; }
+
+        public AddressType? AddressType { get; set; }
+
+
     }
 
     public class MessageCount
@@ -158,13 +182,20 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         string ArticleContent,
         string Url,
         string ContentSentiment,
+        double ArticleTitleSentimentScore,
+        double ContentSentimentScore,
         int MessageCount,
+        AddressType? AddressType,
+        string Address,
         SentimentCount SentimentCount,
         IEnumerable<MwssageUserView> PushContents);
 
     public record MwssageUserView(
         string? PushContent,
-        string? PushContentSentiment);
+        string? PushContentSentiment,
+        string Address,
+        double PushContentSentimentScore
+        );
 
 }
 

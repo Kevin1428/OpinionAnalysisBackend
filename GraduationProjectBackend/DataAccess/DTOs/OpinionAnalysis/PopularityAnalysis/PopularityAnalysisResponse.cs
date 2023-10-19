@@ -1,4 +1,4 @@
-﻿using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
+﻿using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
 
 namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAnalysis
@@ -6,9 +6,9 @@ namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.PopularityAna
     public record PopularityAnalysisResponse(
         ICollection<DateOnly> Dates,
         ICollection<int> DiscussNumber,
-        ICollection<WordCloudAnalysisResult> WordCloudAnalysisResults,
+        IDictionary<AddressType, int> AddressDiscussNumber,
         IDictionary<DateOnly, ICollection<ArticleUserView>> HotArticles = null
-     );
+        );
 
 
 }

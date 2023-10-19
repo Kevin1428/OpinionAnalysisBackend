@@ -9,14 +9,16 @@ namespace GraduationProjectBackend.Helper.Redis
         private static readonly IDatabase Db = RedisConnection.GetDatabase();
 
         public static string GetRedisKey(string topic, DateOnly startDate,
-            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode)
+            DateOnly endDate, int dateRange, bool? isExactMatch, SearchModeEnum searchMode,
+            IEnumerable<AddressType>? addressTypes)
         {
             return topic
                    + startDate
                    + endDate
                    + dateRange
                    + isExactMatch
-                   + searchMode;
+                   + searchMode
+                   + addressTypes;
         }
 
         public static IDatabase GetRedisDatabase()

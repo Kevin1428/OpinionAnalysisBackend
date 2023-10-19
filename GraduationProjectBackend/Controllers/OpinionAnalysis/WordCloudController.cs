@@ -40,7 +40,9 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                     route.StartDate,
                     route.EndDate,
                     query.DateRange,
-                    query.IsExactMatch
+                    query.IsExactMatch,
+                    query.SearchMode,
+                    query.AddressTypes
                     );
 
                 return Ok(wordCloudResponseDTO);
@@ -63,10 +65,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         {
             try
             {
-                var wordCloudResponseDTO = await _wordCloudService.GetPositiveWordCloudResponseDTO(
-                route.Topic,
-                route.StartDate,
-                route.EndDate, query.DateRange, query.IsExactMatch);
+                var wordCloudResponseDTO = await _wordCloudService.GetPositiveWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch, query.SearchMode, query.AddressTypes);
 
                 return Ok(wordCloudResponseDTO);
             }
@@ -88,7 +87,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
         {
             try
             {
-                var wordCloudResponseDTO = await _wordCloudService.GetNegativeWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch);
+                var wordCloudResponseDTO = await _wordCloudService.GetNegativeWordCloudResponseDTO(route.Topic, route.StartDate, route.EndDate, query.DateRange, query.IsExactMatch, query.SearchMode, query.AddressTypes);
 
 
                 return Ok(wordCloudResponseDTO);

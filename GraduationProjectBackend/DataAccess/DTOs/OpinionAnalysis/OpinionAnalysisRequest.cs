@@ -41,6 +41,11 @@ namespace GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis
             /// 對(標題,內文)搜索 或是 (標題,內文)(留言) 分別搜尋
             /// </summary>
             public SearchModeEnum SearchMode { get; set; } = SearchModeEnum.Normal;
+
+            /// <summary>
+            /// 地區位置
+            /// </summary>
+            public IEnumerable<AddressType>? AddressTypes { get; set; } = null;
         }
 
     }

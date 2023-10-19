@@ -30,7 +30,9 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 route.StartDate,
                 route.EndDate,
                 query.DateRange,
-                query.IsExactMatch, query.SearchMode));
+                query.IsExactMatch,
+                query.SearchMode,
+                query.AddressTypes));
         }
 
     }
