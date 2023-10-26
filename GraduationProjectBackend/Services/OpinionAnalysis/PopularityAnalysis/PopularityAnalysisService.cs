@@ -34,7 +34,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
                 Date = DateOnly.Parse(g.Key),
-                count = g.Sum(A => A.MessageCount!.All)
+                count = g.Sum(A => A.MessageCount!.All + 1)
             }).ToList();
 
             var allAddress = Enum.GetValues(typeof(AddressType));
@@ -75,23 +75,23 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                 dateOfAnalysis.Add(leftDate);
 
                 var currentDateHotArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate)
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate)
                     .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
 
                 var currentDateHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.ArticleTitle.Contains("[新聞"))
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
 
                 hotArticles.TryAdd(leftDate, currentDateHotArticles.Select(o => o.ToAtricleUserView()).ToList());
                 redisHotArticleContents.TryAdd(leftDate, currentDateHotArticles.Select(o => o.Content).ToList()!);
                 redisHotArticleNewsContents.TryAdd(leftDate, currentDateHotNewsArticles.Select(o => o.Content).ToList()!);
 
-                disCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.count);
+                disCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date < rightDate).Sum(g => g.count);
 
                 discussNumber.Add(disCount);
                 #region 斷詞統計
                 wordAnalysisResults.Add(await wordCloudService.GetWordCloudResponse(
-                    article.Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).ToList(),
+                    article.Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) < rightDate).ToList(),
                     (a) => true,
                     (a) => true,
                     (a) => true));

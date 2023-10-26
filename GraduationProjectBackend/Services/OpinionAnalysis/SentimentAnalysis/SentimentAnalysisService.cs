@@ -32,8 +32,8 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
             var groupByDayArticles = article.GroupBy(a => a.SearchDate).Select(g => new
             {
                 Date = DateOnly.Parse(g.Key),
-                Positive = g.Sum(A => A.sentiment_count.Positive),
-                Negative = g.Sum(A => A.sentiment_count.Negative),
+                Positive = g.Sum(A => A.sentiment_count.Positive - (A.ArticleTitleSentiment.Equals("positive") ? 1 : 0)),
+                Negative = g.Sum(A => A.sentiment_count.Negative - (A.ArticleTitleSentiment.Equals("negative") ? 1 : 0)),
             }).ToList();
 
 
@@ -64,16 +64,16 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
                 #region 正向統計
 
-                posCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Positive);
+                posCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date < rightDate).Sum(g => g.Positive);
                 postiveNumber.Add(posCount);
 
                 var currentPosHotArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative)
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative)
                     .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
                     .ToList();
 
                 var currentPosHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative && g.ArticleTitle.Contains("[新聞"))
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.sentiment_count.Positive >= g.sentiment_count.Negative && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.sentiment_count!.Positive).Take(1)
                     .ToList();
 
@@ -83,15 +83,15 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
 
                 #endregion
                 #region 負向統計
-                negCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date <= rightDate).Sum(g => g.Negative);
+                negCount = groupByDayArticles.Where(g => g.Date >= leftDate && g.Date < rightDate).Sum(g => g.Negative);
                 negtiveNumber.Add(negCount);
 
                 var currentNegHotArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive)
                     .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
                     .ToList();
                 var currentNegHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) <= rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive && g.ArticleTitle.Contains("[新聞"))
+                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.sentiment_count.Negative >= g.sentiment_count.Positive && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.sentiment_count!.Negative).Take(1)
                     .ToList();
 
@@ -102,7 +102,7 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.SentimentAnalysis
                 #endregion
                 #region 斷詞統計
                 wordAnalysisResults.Add(await wordCloudService.GetWordCloudResponse(
-                    article.Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) <= rightDate).ToList(),
+                    article.Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) < rightDate).ToList(),
                     (a) => true,
                     (a) => true,
                     (a) => true));
