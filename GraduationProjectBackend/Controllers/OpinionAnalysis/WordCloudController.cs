@@ -106,7 +106,7 @@ namespace GraduationProjectBackend.Controllers.OpinionAnalysis
                 var wordCloudResponseDTO = await _trendingTopicQuery.GetTrendingTopicAsync(new OpinionAnalysisParam()
                 {
                     Topic = "*",
-                    StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-90)),
+                    StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-120)),
                     EndDate = DateOnly.FromDateTime(DateTime.Now),
                 });
 
