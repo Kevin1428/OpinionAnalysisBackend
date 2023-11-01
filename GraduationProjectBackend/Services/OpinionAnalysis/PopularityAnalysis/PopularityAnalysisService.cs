@@ -75,11 +75,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.PopularityAnalysis
                 dateOfAnalysis.Add(leftDate);
 
                 var currentDateHotArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate)
+                    .Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) < rightDate)
                     .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
 
                 var currentDateHotNewsArticles = article
-                    .Where(g => DateOnly.Parse(g.SearchDate) > leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.ArticleTitle.Contains("[新聞"))
+                    .Where(g => DateOnly.Parse(g.SearchDate) >= leftDate && DateOnly.Parse(g.SearchDate) < rightDate && g.ArticleTitle.Contains("[新聞"))
                     .OrderByDescending(o => o.MessageCount!.All).Take(1).ToList();
 
                 hotArticles.TryAdd(leftDate, currentDateHotArticles.Select(o => o.ToAtricleUserView()).ToList());

@@ -3,6 +3,7 @@ using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
 using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
+using Mapster;
 using Microsoft.Extensions.Options;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
@@ -106,7 +107,10 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
 
             foreach (var word in allWords)
             {
-                var wordArticles = article.Where(o => o.Content.Contains(word) || o.ArticleTitle.Contains(word) || o.Messages.Select(m => m.PushContent).Any(c => c.Contains(word)));
+                var wordArticles = article.Where(o =>
+                    o.Content.Contains(word) || o.ArticleTitle.Contains(word) ||
+                    o.Messages.Any(m => m.PushContent.Contains(word))).ToList();
+
 
                 foreach (var a in wordArticles)
                 {
