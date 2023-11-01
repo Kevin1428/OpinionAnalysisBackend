@@ -1,7 +1,7 @@
-﻿using Mapster;
+﻿using GraduationProjectBackend.Enums;
+using Mapster;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
-using GraduationProjectBackend.Enums;
 
 namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
 {
@@ -84,7 +84,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
         public double ContentSentimentScore { get; set; }
         public AddressType? AddressType { get; set; }
 
-        public ArticleUserView ToAtricleUserView()
+        public ArticleUserView ToAtricleUserView(bool godCode = true, string godKnow = "")
         {
             return new ArticleUserView(
                 ArticleTitle: ArticleTitle,
@@ -94,7 +94,7 @@ namespace GraduationProjectBackend.Utility.ArticleReader.ArticleModel
                 MessageCount: MessageCount!.All,
                 SentimentCount: sentiment_count!,
                 ContentSentiment: ContentSentiment,
-                PushContents: Messages.Select(o => o.Adapt<MwssageUserView>()).OrderByDescending(o => o.PushContentSentimentScore)!,
+                PushContents: godCode ? Messages.Select(o => o.Adapt<MwssageUserView>()).OrderByDescending(o => o.PushContentSentimentScore)! : Messages.Where(o => o.PushContent.Contains(godKnow)).Select(o => o.Adapt<MwssageUserView>()).OrderByDescending(o => o.PushContentSentimentScore)!,
                 AddressType: AddressType,
                 ArticleTitleSentimentScore: ArticleTitleSentimentScore,
                 ContentSentimentScore: ContentSentimentScore,

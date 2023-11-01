@@ -3,7 +3,6 @@ using GraduationProjectBackend.DataAccess.DTOs.OpinionAnalysis.WordCloudDTOs;
 using GraduationProjectBackend.Enums;
 using GraduationProjectBackend.Utility.ArticleReader;
 using GraduationProjectBackend.Utility.ArticleReader.ArticleModel;
-using Mapster;
 using Microsoft.Extensions.Options;
 
 namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
@@ -112,11 +111,11 @@ namespace GraduationProjectBackend.Services.OpinionAnalysis.WordCloud
                     o.Messages.Any(m => m.PushContent.Contains(word))).ToList();
 
 
-                foreach (var a in wordArticles)
-                {
-                    a.Messages = a.Messages.Where(o => o.PushContent!.Contains(word)).ToList();
-                }
-                relateArticles.Add(word, wordArticles.Select(o => o.ToAtricleUserView()));
+                //foreach (var a in wordArticles)
+                //{
+                //    a.Messages = a.Messages.Where(o => o.PushContent!.Contains(word)).ToList();
+                //}
+                relateArticles.Add(word, wordArticles.Select(o => o.ToAtricleUserView(false, word)));
             }
 
             return await Task.FromResult(new WordCloudAnalysisResult(wordSegment, frequency, nbWordSegment, nbFrequency,
